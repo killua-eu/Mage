@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+[[ "${1}" = "-h" ]] && echo -e "Keychain-genkey is a frontend script to ssh-keygen. Usage:
+keychain-genkey [user] [key-name] [comment] [constraint]
+
+    Multiple certificate constraints can be specified when signing a key:
+
+             -O clear
+                     Clear all enabled permissions. This is useful for clearing the default set of permissions so permissions may be
+                     added individually.
+             -O force-command=command
+                     Forces the execution of command instead of any shell or command specified by the user when the certificate is
+                     used for authentication.
+             -O permit-agent-forwarding
+                     Allows ssh-agent(1) forwarding.
+             -O permit-port-forwarding
+                     Allows port forwarding.
+             -O permit-pty
+                     Allows PTY allocation.
+             -O permit-user-rc
+                     Allows execution of ~/.ssh/rc by sshd(8).
+             -O permit-x11-forwarding
+                     Allows X11 forwarding.
+             -O source-address=address_list
+                     Restrict the source addresses from which the certificate is considered valid.  The address_list is a comma-sepa‐
+                     rated list of one or more address/netmask pairs in CIDR format.
+
+     The default constraint is: -O clear -O permit-pty -O permit-user-rc
+
+     To show the fingerprint of specified public key file, run 'ssh-keygen -lv -f [file]'. If -v is ommited, the ASCII art representation
+     of the key will not be supplied. To change the passphrase of a private key file, run 'ssh-keygen -p [file]'
+
+     Example: keychain-genkey user123 id_rsa-public \"SSH key to be used on public sites (i.e. GitHub, etc.)\"
+" && exit
+
+                  
+echo "keychain-genkey v1.0 [mage-project]"
+user=${1}
+keyname=${2}
+comment=${3}
+constraint=${4}
+[[ -z "${1}" ]] && user=`whoami`
+[[ -z "${2}" ]] && keyname="id_rsa"
+[[ -z "${4}" ]] && constraint="-O clear -O permit-pty -O permit-user-rc"
+keypath="/home/${user}/.ssh"
+[[ ${user} = "root" ]] && keypath="/root/.ssh"
+
+[[ -z "${1}" ]] && echo "[NOTE] Username not provided. Assuming '${user}'"
+[[ -z "${2}" ]] && echo "[NOTE] Key-name not provided. Assuming ${keypath}/${keyname}"
+[[ -f "${keypath}/${keyname}" ]] && echo "[WARN] Key ${keypath}/${keyname} already exists."
+[[ `whoami` != "root" ]] && [[ `whoami` != "${user}" ]] && echo "[FAIL] Can't create key for user  unless logged in as '${user}' or 'root'." && exit
+[[ `cat /proc/sys/kernel/random/entropy_avail` -lt 500 ]] && echo "[FAIL] Low entropy (<500). As a security requirenement, please add more entropy by starting timer_entropyd '/etc/init.d/timer_entropyd start'" && exit
+
+run="ssh-keygen -b 8192 -t rsa ${constraint} -f ${keypath}/${keyname}"
+[[ ${comment} != "" ]] && run="${run} -C \"${comment}\""
+echo " * Creating a new 8192 bit rsa-key for user '${user}' with:"
+echo " * $run"
+echo " * This will take some time ..."
+eval ${run}
+
+echo -n " * Setting permissions ... "
+chown ${user}:${user} ${keypath}/${keyname}
+chown ${user}:${user} ${keypath}/${keyname}.pub
+chmod 600 ${keypath}/${keyname}
+chmod 644 ${keypath}/${keyname}.pub
+echo "done!"
+
+echo -n " * Identifying default shell ... "
+shell=`cat /etc/passwd | grep ${user} | sed 's/.*bin\///'`
+echo "${shell}"
+
+if [ ${shell} = "bash" ] ; then
+  echo -e " * Installing key to bashrc ..."
+  echo -e "
+  # Please add this to `echo ${keypath} | cut -c4`/.bash_profile
+  keychain ~/.ssh/${keyname}
+  . ~/.keychain/$HOSTNAME-sh
+  . ~/.keychain/$HOSTNAME-sh-gpg"
+else echo "[FAIL] Currently this script lacks support for shells different from bash"
+fi 
+
