@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+[[ "${1}" = "-h" ]] && echo -e "Keychain-delkey is a frontend script to ssh-keygen. Usage:
+     To delete a key, change the ~/.bash_profile entry and delete public and private key in ~./.ssh. Also remove public keys from remote hosts.
+" && exit
+
+# TODO script the help suggestions

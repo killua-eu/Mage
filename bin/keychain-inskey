@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+[[ "${1}" = "-h" ]] && echo -e "Keychain-inskey is a frontend script to ssh-keygen. Usage:
+keychain-inskey [key] [user@server] [port]
+" && exit
+
+key=${1}
+target=${2}
+port=${3}
+
+[[ ! -f "${key}" ]] && echo "key not found. exiting." && exit
+[[ -z "${2}" ]] && echo "target server not set. exiting." && exit
+[[ ! -z "${3}" ]] && port_scp="-P ${3}" && port_ssh="-p ${3}"
+
+
+scp ${port_scp} ${key} ${target}:~/mage-mage-myhost.pub
+ssh ${target} ${port_ssh} "cat ~/mage-mage-myhost.pub >> ~/.ssh/authorized_keys && cat ~/.ssh/authorized_keys && rm ~/mage-mage-myhost.pub"
+
+# TODO keep a list of where which key is used on inskey. store in /var/mage/ hierarchy

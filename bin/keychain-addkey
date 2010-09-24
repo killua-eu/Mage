@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-[[ "${1}" = "-h" ]] && echo -e "Keychain-genkey is a frontend script to ssh-keygen. Usage:
-keychain-genkey [user] [key-name] [comment] [constraint]
+[[ "${1}" = "-h" ]] && echo -e "Keychain-addkey is a frontend script to ssh-keygen. Usage:
+keychain-addkey [user] [key-name] [comment] [constraint]
 
     Multiple certificate constraints can be specified when signing a key:
 
@@ -26,14 +26,11 @@ keychain-genkey [user] [key-name] [comment] [constraint]
 
      The default constraint is: -O clear -O permit-pty -O permit-user-rc
 
-     To show the fingerprint of specified public key file, run 'ssh-keygen -lv -f [file]'. If -v is ommited, the ASCII art representation
-     of the key will not be supplied. To change the passphrase of a private key file, run 'ssh-keygen -p [file]'
-
-     Example: keychain-genkey user123 id_rsa-public \"SSH key to be used on public sites (i.e. GitHub, etc.)\"
+     Example: keychain-addkey user123 id_rsa-public \"SSH key to be used on public sites (i.e. GitHub, etc.)\"
 " && exit
 
                   
-echo "keychain-genkey v1.0 [mage-project]"
+echo "keychain-addkey v1.0 [mage-project]"
 user=${1}
 keyname=${2}
 comment=${3}
@@ -68,13 +65,22 @@ echo -n " * Identifying default shell ... "
 shell=`cat /etc/passwd | grep ${user} | sed 's/.*bin\///'`
 echo "${shell}"
 
+# TODO mechanism to add bashrc entry "keychain ~/.ssh/key1  ~/.ssh/key2  ~/.ssh/key3"
 if [ ${shell} = "bash" ] ; then
-  echo -e " * Installing key to bashrc ..."
-  echo -e "
-  # Please add this to `echo ${keypath} | cut -c4`/.bash_profile
-  keychain ~/.ssh/${keyname}
-  . ~/.keychain/$HOSTNAME-sh
-  . ~/.keychain/$HOSTNAME-sh-gpg"
-else echo "[FAIL] Currently this script lacks support for shells different from bash"
+  rc="`echo ${keypath} | rev | cut -b 4- | rev`bash_profile"
+  echo -e " * Installing key into ${rc}"
+  if [ -n "`cat ${rc} | grep keychain`" ] ; then
+    # add the new key to the line starting with "keychain" to get something like
+    # "keychain ~/.ssh/key1  ~/.ssh/key2  ~/.ssh/key3"
+    sedkey="~\/.ssh\/${keyname}"
+    sed -i "s/^keychain \(.*\)/\keychain \1 ${sedkey}/" `echo ${keypath} | rev | cut -b 4- | rev`/.bash_profile
+  else
+    echo -e "
+    keychain ~/.ssh/${keyname}
+    . ~/.keychain/$HOSTNAME-sh
+    . ~/.keychain/$HOSTNAME-sh-gpg" >> ${rc}
+  fi
+else
+  echo "[FAIL] Currently this script lacks support for shells different from bash"
 fi 
 

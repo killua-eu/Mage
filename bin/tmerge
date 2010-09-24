@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+memfree=`free -m | grep buffers/cache | cut --delimiter=' ' -f17`
+alloc=$[$memfree-300]
+[[ ${alloc} -lt 400 ]] && echo "Not enough memory (${memfree} MB available), exiting." && exit
+echo "Allocating ${alloc} MB for tmpfs"
+
+mounted=false
+
+. /etc/make.conf
+. /etc/init.d/functions.sh
+
+if [ -z "$PORTAGE_TMPDIR" ]; then
+  PORTAGE_TMPDIR="/var/tmp/portage"
+fi
+
+
+mounttmpfs() {
+                mount -t tmpfs -o size=${alloc}M,nr_inodes=1M tmpfs ${PORTAGE_TMPDIR}
+                sleep 1
+                mounted="true"
+}
+
+compile() {
+        einfo "running emerge ${*}"
+                emerge ${*}
+}
+
+unmount() {
+        ebegin "unmounting tmpfs"
+                umount -f ${PORTAGE_TMPDIR}
+        eend $?
+}
+
+ebegin "Mounting $alloc of memory to ${PORTAGE_TMPDIR}"
+        if [ -z "$(pgrep -f /usr/bin/emerge)" ];then
+                if [ -z "$(mount | grep ${PORTAGE_TMPDIR})" ];then
+                     mounttmpfs
+                else
+                     eerror "tmpfs already mounted!"
+                     exit 0
+                fi
+        else
+                eerror "emerge already running!"
+                exit 0
+        fi
+eend $?
+
+# if available, change the cpu-governor to the highest frequency
+[ -f /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor ] && gov=`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor` && echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+
+# run emerge
+compile $@
+
+# unmount tmpfs
+$mounted && umount ${PORTAGE_TMPDIR}
+
+# set the cpu-governor to original state
+[ -f /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor ] && echo ${gov} > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+

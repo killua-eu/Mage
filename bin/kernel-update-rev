@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# TODO how much memory oo/xorg compile?
+
+kern_uname=( `uname -r | sed 's/-/ /g'` )
+kern_cur=( `qatom "sys-kernel/${kern_uname[1]}-sources-${kern_uname[0]}-${kern_uname[2]}"` )
+kern_new=`ACCEPT_KEYWORDS="**" emerge -up =${kern_cur[0]}/${kern_cur[1]}-${kern_cur[2]}* | grep "${kern_cur[0]}/${kern_cur[1]}" | sed 's/^.* \] \(.*\)/\1/' | sed 's/^\(.*\) \[.*/\1/'`
+kern_new=( `qatom "${kern_new}"` )
+echo " * Current kernel revision: ${kern_cur[0]}/${kern_cur[1]}-${kern_cur[2]}-${kern_cur[3]}"
+echo " * Latest kernel revision:  ${kern_new[0]}/${kern_new[1]}-${kern_new[2]}-${kern_new[3]}"
+[[ ${kern_cur[3]} = ${kern_new[3]} ]] && echo "This box runs the latest available ${kern_cur[1]}-${kern_cur[2]} kernel revision, or you forgot to sync the tree. Exiting ..." && exit
+echo " * Emerging ..."
+ACCEPT_KEYWORDS="**" emerge =${kern_new[0]}/${kern_new[1]}-${kern_new[2]}-${kern_new[3]}
+
+echo " * Changing kernel (eselect kernel list)"
+$curdir=`pwd`
+cd /usr/src
+ln -sfn linux-${kern_uname[0]}-${kern_uname[1]}-${kern_new[3]} linux
+
+
+echo " * Copying older revision's config"
+zcat /proc/config > /usr/src/linux-${kern_uname[0]}-${kern_uname[1]}-${kern_new[3]}/.config
+
+echo " * Compiling ..."
+cd /usr/src/linux
+make && make modules_install
+
+echo " * Copying to /boot"
+mount /boot
+[[ ! -d /boot/config ]] && mkdir /boot/config
+cp arch/`uname -m`/boot/bzImage /boot/${kern_uname[0]}-${kern_uname[1]}-${kern_new[3]}
+cp ./.config /boot/config/${kern_uname[0]}-${kern_uname[1]}-${kern_new[3]}
+cd $curdir
+
+echo " * Rebuilding external modules"
+module-rebuild populate
+module-rebuild rebuild
+
+# TODO Automatic grub.conf reconfiguring
+
+echo " All done! Please reconfigure /boot/grub/grub.conf now! Then reboot into the new kernel."
+
+kern_uname=( `uname -r | sed 's/-/ /g'` )
+emerge --unmerge -p "<sys-kernel/${kern_uname[1]}-sources-${kern_uname[0]}-${kern_uname[2]}"

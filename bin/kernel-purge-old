@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+echo "Removes all older kernels then the one currently in use"
+kern_uname=( `uname -r | sed 's/-/ /g'` )
+emerge --unmerge -p "<sys-kernel/${kern_uname[1]}-sources-${kern_uname[0]}-${kern_uname[2]}"

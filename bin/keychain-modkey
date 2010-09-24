@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+[[ "${1}" = "-h" ]] && echo -e "Keychain-modkey is a frontend script to ssh-keygen. Usage:
+
+     To show the fingerprint of specified public key file, run 'ssh-keygen -lv -f [file]'. If -v is ommited, the ASCII art representation
+     of the key will not be supplied. To change the passphrase of a private key file, run 'ssh-keygen -p [file]'
+
+     To rename a key, change the ~/.bash_profile entry and rename public and private key in ~./.ssh
+" && exit
+
+# TODO script the help suggestions
