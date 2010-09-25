@@ -38,6 +38,3 @@ module-rebuild rebuild
 # TODO Automatic grub.conf reconfiguring
 
 echo " All done! Please reconfigure /boot/grub/grub.conf now! Then reboot into the new kernel."
-
-kern_uname=( `uname -r | sed 's/-/ /g'` )
-emerge --unmerge -p "<sys-kernel/${kern_uname[1]}-sources-${kern_uname[0]}-${kern_uname[2]}"
