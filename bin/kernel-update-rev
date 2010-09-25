@@ -33,8 +33,8 @@ cp ./.config /boot/config/${kern_uname[0]}-${kern_uname[1]}-${kern_new[3]}
 cd $curdir
 
 echo " * Rebuilding external modules"
-module-rebuild populate
-module-rebuild rebuild
+module-rebuild -X populate
+module-rebuild -X rebuild
 
 # TODO Automatic grub.conf reconfiguring
 
