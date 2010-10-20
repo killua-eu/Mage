@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+[[ "${1}" = "-h" ]] && echo -e "Gnupg-addkey is a frontend script to gpg. Usage:
+
+     Edit script variables (yeah this is stupid), set \$run to 1, execute.
+
+" && exit
+
+name="Name Surname"
+comment=""
+mail="mail@example.com"
+expiry="0"
+pass="SillyPassword*321"
+http_proxy=""
+
+# Safeguard till this script is finished
+run="0"
+[[ ${run} = "0" ]] && exit
+
+# Leave the rest as is unless you know what you're doing
+keyserver="subkeys.pgp.net"
+keyserver="pool.sks-keyservers.net"
+keyalg="RSA"
+keylen="4096"
+subkeyalg="RSA"
+subkeylen="4096"
+path=""
+pubfile=""
+secfile=""
+
+comment2=""
+[[ ${comment} != "" ]] && comment2=" (${comment})" && comment="Name-Comment: ${comment}"
+[[ ${pubfile} != "" ]] && pubfile="%pubring ${path}/${pubfile}"
+[[ ${secfile} != "" ]] && secfile="%secring ${path}/${secfile}"
+
+echo "gpg: * Generating a new OpenPGP key for ${name}${comment2} <${mail}>"
+echo "gpg: * Key: ${keyalg} (${keylen} bit)"
+echo "gpg: * Subkey: ${subkeyalg} (${subkeylen} bit)"
+echo "gpg: * Expiry: ${expiry} (0 = does not expire)"
+
+cat >pgpbatch-${mail} <<EOF
+     Key-Type: ${keyalg}
+     Key-Length: ${keylen}
+     Subkey-Type: ${subkeyalg}
+     Subkey-Length: ${subkeylen}
+     Name-Real: ${name}
+     ${comment}
+     Name-Email: ${mail}
+     Expire-Date: ${expiry}
+     Passphrase: ${pass}
+     ${pubfile}
+     ${secfile}
+     %commit
+EOF
+
+# TODO test if timer_entropyd exists
+# TODO get timer_entropyd status, restore it afterwards.
+
+/etc/init.d/timer_entropyd start
+res=`gpg --batch --gen-key pgpbatch-${mail}`
+echo ${res}
+# TODO $res is empty ... why?
+key=`echo ${res} | cut --delimiter=" " -f 3`
+[[ "${path}" = "" ]] && path="/home/`whoami`/.gnupg"
+
+revoke="${key}-<${mail}>-revoke.asc"
+echo "gpg: * generating revocation certificate (${path}/${revoke})"
+gpg --output "${path}/${revoke}" --gen-revoke ${key}
+
+private="${key}-<${mail}>-private.asc"
+echo "gpg: * exporting private key (${path}/${private})"
+gpg --export-secret-keys --armor ${key} > ${path}/${private}
+
+public="${key}-<${mail}>-public.asc"
+echo "gpg: * exporting public key (${path}/${public})"
+gpg --export --armor ${key} > ${path}/${public}
+
+extraopts=""
+[[ -n "${http_proxy}" ]] && extraopts="--keyserver-options honor-http-proxy" && export http_proxy=${http_proxy}
+gpg --keyserver ${keyserver} ${extraopts} --send-key ${key}
+
+/etc/init.d/timer_entropyd stop
+rm pgpbatch-${mail}
+
+# TODO with gnupg install set up cronscript calling "gpg --refresh-keys" for all users
+
