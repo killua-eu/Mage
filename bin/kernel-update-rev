@@ -2,7 +2,8 @@
 # TODO how much memory oo/xorg compile?
 
 kern_uname=( `uname -r | sed 's/-/ /g'` )
-kern_cur=( `qatom "sys-kernel/${kern_uname[1]}-sources-${kern_uname[0]}-${kern_uname[2]}"` )
+[[ ${kern_uname[2]} ]] && kern_uname[2]="-${kern_uname[2]}"
+kern_cur=( `qatom "sys-kernel/${kern_uname[1]}-sources-${kern_uname[0]}${kern_uname[2]}"` )
 kern_new=`ACCEPT_KEYWORDS="**" emerge -up =${kern_cur[0]}/${kern_cur[1]}-${kern_cur[2]}* | grep "${kern_cur[0]}/${kern_cur[1]}" | sed 's/^.* \] \(.*\)/\1/' | sed 's/^\(.*\) \[.*/\1/'`
 kern_new=( `qatom "${kern_new}"` )
 [[ ${kern_cur[1]} != ${kern_new[1]} ]] && echo "This box runs the latest available ${kern_cur[1]}-${kern_cur[2]} kernel revision, or you forgot to sync the tree. Exiting ..." && exit
