@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-[[ "${1}" = "-h" ]] && echo -e "Keychain-addkey is a frontend script to ssh-keygen. Usage:
+[[ "${1}" = "-h" || "${1}" = "--help" ]] && echo -e "Keychain-addkey is a frontend script to ssh-keygen. Usage:
 keychain-addkey [user] [key-name] [comment] [constraint]
 
     Multiple certificate constraints can be specified when signing a key:
@@ -43,7 +43,7 @@ keypath="/home/${user}/.ssh"
 
 [[ -z "${1}" ]] && echo "[NOTE] Username not provided. Assuming '${user}'"
 [[ -z "${2}" ]] && echo "[NOTE] Key-name not provided. Assuming ${keypath}/${keyname}"
-[[ -f "${keypath}/${keyname}" ]] && echo "[WARN] Key ${keypath}/${keyname} already exists."
+[[ -f "${keypath}/${keyname}" ]] && echo "[FAIL] Key ${keypath}/${keyname} already exists." && exit
 [[ `whoami` != "root" ]] && [[ `whoami` != "${user}" ]] && echo "[FAIL] Can't create key for user  unless logged in as '${user}' or 'root'." && exit
 [[ `cat /proc/sys/kernel/random/entropy_avail` -lt 500 ]] && echo "[FAIL] Low entropy (<500). As a security requirenement, please add more entropy by starting timer_entropyd '/etc/init.d/timer_entropyd start'" && exit
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-[[ "${1}" = "-h" ]] && echo -e "Keychain-delkey is a frontend script to ssh-keygen. Usage:
+[[ "${1}" = "-h" || "${1}" = "--help" || "${1}" = "" ]] && echo -e "Keychain-delkey is a frontend script to ssh-keygen. Usage:
      To delete a key, change the ~/.bash_profile entry and delete public and private key in ~./.ssh. Also remove public keys from remote hosts.
 " && exit
 
