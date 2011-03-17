@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+kern_uname=( `uname -r | sed 's/-/ /g'` )
+[[ ${kern_uname[2]} ]] && kern_uname[2]="-${kern_uname[2]}"
+kern_cur=( `qatom "sys-kernel/${kern_uname[1]}-sources-${kern_uname[0]}${kern_uname[2]}"` )
+kern_new=`ACCEPT_KEYWORDS="**" emerge -pv ${kern_cur[0]}/${kern_cur[1]} | grep "${kern_cur[0]}/${kern_cur[1]}" | awk '{ print $4 }'`
+kern_new=( `qatom "${kern_new}"` )
+[[ ${kern_new[3]} ]] && kern_new[3]="-${kern_new[3]}"
+[[ ${kern_cur[3]} ]] && kern_cur[3]="-${kern_cur[3]}"
+
+[[ ${kern_cur[2]} != ${kern_new[2]} ]] && echo "This box runs the latest available ${kern_cur[1]}-${kern_cur[2]} kernel version. If you want to update the the latest revision, try 'kernel-update-rev'. Exiting ..." && exit
+echo " * Current kernel revision: ${kern_cur[0]}/${kern_cur[1]}-${kern_cur[2]}${kern_cur[3]}"
+echo " * Latest kernel revision:  ${kern_new[0]}/${kern_new[1]}-${kern_new[2]}${kern_new[3]}"
+echo " * Emerging ..."
+ACCEPT_KEYWORDS="**" emerge -u ${kern_new[0]}/${kern_new[1]}
+
+echo " * Changing kernel (eselect kernel list)"
+esel=`eselect kernel list | grep ${kern_new[2]}`
+[[ ${kern_new[3]} ]] && esel=`eselect kernel list | grep ${kern_new[2]} | grep ${kern_new[3]}`
+esel=`echo "${esel}" | awk '{ print $1 }' | cut -b 2- | rev |  cut -b 2- | rev`
+eselect kernel set ${esel}
+
+echo " * Running 'make oldconfig' ..."
+sleep 3
+cd /usr/src/linux
+make oldconfig
+
+echo " * Compiling ..."
+make && make modules_install
+
+echo " * Copying to /boot"
+mount /boot
+[[ ! -d /boot/config ]] && mkdir /boot/config
+cp arch/`uname -m`/boot/bzImage /boot/${kern_new[2]}-${kern_uname[1]}${kern_new[3]}
+cp ./.config /boot/config/${kern_new[2]}-${kern_uname[1]}${kern_new[3]}
+cd $curdir
+
+
+echo " * Rebuilding external modules"
+module-rebuild -X populate
+module-rebuild -X rebuild
+
+# TODO Automatic grub.conf reconfiguring
+
+echo " All done! Please reconfigure /boot/grub/grub.conf now! Then reboot into the new kernel."
