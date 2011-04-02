@@ -1,1 +1,28 @@
-Mage (Manage Gentoo) is a system for simple templated installation and management of computers and clusters running Gentoo Linux. Mage is currently pre-alpha, released under the GNU-GPLv3 license. Project homepage: http://mage.vaizard.org/en/ Organization homepage: http://vaizard.org/
+Mage (Manage Gentoo) is a system for simple templated installation and
+management of computers and clusters running Gentoo Linux. Mage is currently
+pre-alpha, released under the GNU-GPLv3 license.
+
+Project homepage: http://mage.vaizard.org/en/
+Organization homepage: http://vaizard.org/
+
+CONCEPT:
+- Mage is (to be) a set of tools to manage single Gentoo boxes or clusters of
+  (real/virtual) Gentoo boxes. Basically something like puppet only different ;)
+- Used for
+  * Bootstrapping:
+    - Mage loads a configuration file describing a machine's intended usage
+      (server, desktop, portable, embedded, etc.), required set of base software
+      packages, kernel configuration and system configuration (Mage's config
+      files can make the installer aware of its surroundings - i.e. how to fit
+      in a network of computers with a given role)
+    - Mage detects the boxes hardware, installs the base system, configures and
+      installs the kernel, sets up the boxes configuration and boots into a
+      readymade system.
+  * Management: installing and configuring, updating and removing applications,
+    locally and remotely [i.e. pssh or gearman?], managing roles within a
+    cluster [binds with ganeti]
+- Some of what mage does is automatic, some semiautomatic
+- Packages are installed and configured in sets, roleaware (of packages - i.e.
+  dovecot+postfix+postgrey+spamassassin, if mx master or backup)
+- Performs incremental backups of machine state (/etc, list of installed
+  packages, etc. - based on conf-update, maybe fillup/fillup-ng - 2011 gsoc)
