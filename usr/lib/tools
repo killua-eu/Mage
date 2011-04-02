@@ -1,0 +1,89 @@
+#!/usr/bin/python
+
+######################################################################
+# -*- coding: utf-8 -*-                                              #
+#                                                                    #
+# FILE : tools.py                                                    #
+# CREATION DATE : 31-JUL-2010                                        #
+# LAST MODIFICATION DATE : 31-JUL-2010                               #
+#                                                                    #
+#--------------------------------------------------------------------#
+#                                                                    #
+# CHANGELOG:                                                         #
+# ==========                                                         #
+# v0.1   31-JUL-2010   Jaromir Capik                                 #
+# -Initial version                                                   #
+#                                                                    #
+######################################################################
+
+from subprocess import *
+
+############ CONSTANTS #############
+
+# Escape sequences - colored text
+esc_normal  = chr(27) + "[0m"
+esc_red     = chr(27) + "[31m"
+esc_green   = chr(27) + "[32m"
+esc_brown   = chr(27) + "[33m"
+esc_blue    = chr(27) + "[34m"
+esc_purple  = chr(27) + "[35m"
+esc_cyan    = chr(27) + "[36m"
+esc_grey    = chr(27) + "[37m"
+
+############ FUNCTIONS #############
+
+# dump string
+def dump_string(text,debug_mode):
+    if debug_mode == 0:
+	print text
+
+# dump value (with debug support)
+def dump_value(caption,value,debug_mode):
+    if debug_mode == 1:
+	if isinstance(value,str):
+	    if value.find("\n") == -1: # single-line
+		print esc_cyan + str(caption) + esc_normal + " = " + esc_brown + str(value) + esc_normal
+	    else:                      # multi-line
+		print esc_cyan + str(caption) + esc_normal + " = \n" + esc_brown + str(value) + esc_normal
+	else:
+	    print esc_cyan + str(caption) + esc_normal + " = " + esc_brown + str(value) + esc_normal
+    else:
+	# LF znaky se nahradi za \\n
+	if isinstance(value,str):
+	    print str(caption) + " = \"" + str(value).replace("\n","\\n\" \\\n\"") + "\""
+	    if value.find("\n") == -1: # single-line
+		print "print_value(\"" + str(caption) + "\"," + str(caption) + ",print_mode)\n"
+	    else:                      # multi-line
+		print "print_value(\"" + str(caption) + "\"," + "\"\\n\" + " + str(caption) + ",print_mode)\n"
+	else:
+	    print str(caption) + " = " + str(value)
+	    print "print_value(\"" + str(caption) + "\"," + str(caption) + ",print_mode)\n"
+
+
+# dump value (with debug support)
+def print_value(caption,value,mode):
+    if mode == "print":
+	print str(caption) + " = " + str(value)
+
+
+# intersection of 2 lists
+def list_intersection(a, b):
+     return list(set(a) & set(b))
+
+# head of non-empty list
+def safe_list_head(a):
+    if len(a) != 0:
+	return a[0]
+    else:
+	return ""
+
+# run system command & return the command stdout
+def read_cmd_stdout(cmd):
+    p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
+    (child_stdin, child_stdout_and_stderr) = (p.stdin, p.stdout)
+    ret = child_stdout_and_stderr.read()
+    if ret != '':                   # remove LF on the last line (important for splitting)
+        if ret[-1] == '\n':
+	    ret = ret[:-1]
+    return ret
+

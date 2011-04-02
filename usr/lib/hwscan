@@ -1,0 +1,88 @@
+#!/usr/bin/python
+
+######################################################################
+# -*- coding: utf-8 -*-                                              #
+#                                                                    #
+# FILE : hwscan                                                      #
+# CREATION DATE : 31-JUL-2010                                        #
+# LAST MODIFICATION DATE : 06-AUG-2010                               #
+#                                                                    #
+#--------------------------------------------------------------------#
+#                                                                    #
+# CHANGELOG:                                                         #
+# ==========                                                         #
+# v0.1   31-JUL-2010   Pavel Stratil & Jaromir Capik                 #
+# -Initial version                                                   #
+#                                                                    #
+# v0.2   06-AUG-2010   Jaromir Capik				     #
+# -Reworked to support importable/executable dumps                   #
+#                                                                    #
+######################################################################
+
+debug_hwscan = 0  # 0=Off, 1=On
+
+####################################
+
+import os
+from tools import *
+from collections import defaultdict
+
+############### MAIN ###############
+
+# check for root privileges
+if os.getuid():
+    print 'You need to be root to run hw-scan'
+    sys.exit()
+
+hw = defaultdict(defaultdict)
+
+dump_string("#!/usr/bin/python\n",debug_hwscan)
+dump_string("import sys",debug_hwscan)
+dump_string("from tools import *",debug_hwscan)
+dump_string("from collections import defaultdict\n",debug_hwscan)
+dump_string("print_mode = \"\"",debug_hwscan);
+dump_string("for arg in sys.argv:",debug_hwscan);
+dump_string("\tif arg == \"print\":",debug_hwscan)
+dump_string("\t\tprint_mode = \"print\"",debug_hwscan)
+dump_string("hw = defaultdict(defaultdict)\n",debug_hwscan)
+
+hw['cpu']['flags'] = read_cmd_stdout("cat /proc/cpuinfo | grep flags | cut -d"":"" -f2- | cut -b2-").split(" ")
+dump_value("hw['cpu']['flags']",hw['cpu']['flags'],debug_hwscan)
+
+hw['cpu']['cores'] = int(read_cmd_stdout("cat /proc/cpuinfo | grep processor | wc -l"))
+dump_value("hw['cpu']['cores']",hw['cpu']['cores'],debug_hwscan)
+
+hw['wireless']['lspci'] = read_cmd_stdout("lspci -v | sed -n '/Wireless/,/^$/p'")
+dump_value("hw['wireless']['lspci']",hw['wireless']['lspci'],debug_hwscan)
+
+hw['wireless']['name'] = read_cmd_stdout("lspci -v | sed -n '/Wireless/,/^$/p' | grep Wireless | sed 's/.*: //' | sed 's/ (.*//'")
+dump_value("hw['wireless']['name']",hw['wireless']['name'],debug_hwscan)
+
+hw['vga']['lspci'] = read_cmd_stdout("lspci -v | sed -n '/VGA/,/^$/p'")
+dump_value("hw['vga']['lspci']",hw['vga']['lspci'],debug_hwscan)
+
+hw['vga']['usedrv'] = read_cmd_stdout("lspci -v | sed -n '/VGA/,/^$/p' | grep 'Kernel driver in use' | sed 's/.*: //' | sed 's/ (.*//'")
+dump_value("hw['vga']['usedrv']",hw['vga']['usedrv'],debug_hwscan)
+
+# ls /dev/sd*, delete those ending with a number, hdparm $device, grep for t10/t13 support, count lines
+hw['block']['t10/t13'] = int(read_cmd_stdout("for d in `ls /dev/sd* | sed '/.[0-9]/d'`; do hdparm -I ${d} | grep -e T13 -e T10; done | wc -l"))
+dump_value("hw['block']['t10/t13']",hw['block']['t10/t13'],debug_hwscan)
+
+hw['cpu']['vendor'] = read_cmd_stdout("cat /proc/cpuinfo | grep vendor_id | tail -n 1 |cut -d"":"" -f2- | cut -b2-")
+dump_value("hw['cpu']['vendor']",hw['cpu']['vendor'],debug_hwscan)
+
+hw['cpu']['model'] = int(read_cmd_stdout("cat /proc/cpuinfo | grep 'model\t' | tail -n 1 | cut -d"":"" -f2- | cut -b2-"))
+dump_value("hw['cpu']['model']",hw['cpu']['model'],debug_hwscan)
+
+# mode: lm/long mode/64bit, rm/real mode/16bit, pm/protected mode/32bit
+hw['cpu']['mode'] = safe_list_head(list_intersection(['lm', 'rm', 'pm'], hw['cpu']['flags']))
+dump_value("hw['cpu']['mode']",hw['cpu']['mode'],debug_hwscan)
+
+# true/false na virt extensions
+hw['cpu']['virt'] = len(list_intersection(['vmx', 'svm'], hw['cpu']['flags'])) != 0
+dump_value("hw['cpu']['virt']",hw['cpu']['virt'],debug_hwscan)
+
+# cat /proc/meminfo
+hw['ram'] = read_cmd_stdout("cat /proc/meminfo | grep 'MemTotal:'")
+dump_value("hw['ram']",hw['ram'],debug_hwscan)
+

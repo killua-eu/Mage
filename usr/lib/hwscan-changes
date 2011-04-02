@@ -1,0 +1,34 @@
+#!/usr/bin/python
+
+######################################################################
+# -*- coding: utf-8 -*-                                              #
+#                                                                    #
+# FILE : detect_hw_changes.py                                        #
+# CREATION DATE : 06-AUG-2010                                        #
+# LAST MODIFICATION DATE : 06-AUG-2010                               #
+#                                                                    #
+#--------------------------------------------------------------------#
+#                                                                    #
+# CHANGELOG:                                                         #
+# ==========                                                         #
+# v0.1   06-AUG-2010   Jaromir Capik                                 #
+# -Initial version                                                   #
+#                                                                    #
+######################################################################
+
+import os
+from tools import *
+
+############### MAIN ###############
+
+tmp = read_cmd_stdout("mv hwscan.dump.now hwscan.dump.old")
+tmp = read_cmd_stdout("./hwscan.py > hwscan.dump.now")
+tmp = read_cmd_stdout("chmod 777 hwscan.dump.now")
+
+hwscan_new_stdout = read_cmd_stdout("./hwscan.dump.now print")
+hwscan_old_stdout = read_cmd_stdout("./hwscan.dump.old print")
+
+if hwscan_new_stdout != hwscan_old_stdout:
+    print 1
+else:
+    print 0

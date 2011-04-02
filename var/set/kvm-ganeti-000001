@@ -1,0 +1,39 @@
+#!/bin/bash
+
+install() {
+  flaggie app-emulation/ganeti -- +~amd64
+  flaggie app-emulation/qemu-kvm -- +~amd64
+  flaggie app-emulation/ganeti +drbd +kvm +syslog
+  emerge app-emulation/libvirt app-emulation/qemu-kvm
+  [[ !kernconf("virt kvm virtio") ]] && kernrebuild("+virt +kvm +virtio")
+  [[ kernconf("virtualbox") || kernmod("virtualbox") ]] && gwarn "virtualbox and kvm modules cant be loaded at the same time."
+  gchat "Which should be loaded at boot time?" "virtualbox" "kvm" # pokud interaktivni potreba tak by mel poslat mail ze neco chce
+  rc-update libvirtd add default
+  # etc...
+}
+
+uninstall() {
+  [[ !getdeps("app-emulation/ganeti") ]]
+  [[ !getdeps("app-emulation/qemu-kvm") ]]
+    flaggie app-emulation/qemu-kvm -- %~amd64
+    [[ kernconf("virtualbox") || kernmod("virtualbox") ]] && gwarn "virtualbox and kvm modules couldn't load at the same time."
+    gchat "Now that kvm is being uninstalled, do you want virtualbox modules to be loaded at boot?" "y" "n"
+    # co takhle delat zavislostni tabulku kdo co potrebuje za flag ... ze by byl zaznam typu:
+    # qemu app-emulation/libvirt ${this-script}
+    # xen app-emulation/libvirt ${xen-install-script}
+flaggie app-emulation/libvirt -- %~amd64
+
+}
+
+upgrade() {
+# z verze na verzi co udelat?
+# install potrebuje omezeni na ktere verze libvirtu a qemu-kvm lze pouzit! uzivatel by si vybral jestli to pouzit na tvrdo ten horni limit
+# 1) install log by vse logoval chronologicky
+# 2) konfiguraky kernelu by meli initial a current verzi (a to mezitim by slo odvodit z logu)
+# 3) ditto pro nainstalovane baliky
+# 4) jak reflektovat rucni zasahy? fam nad /etc a nekterymi vecmi ve /var, > pokud zmena neni udelana magem pak to byl uzivatel
+# 5) monitoring emerge logu > viz 4
+# 6) patche od uzivatele nejak vyprcnout ven a udrzovat je vyprcle
+# 7) udrzovat seznam i pro nainstgalovane aplikace
+# TODO vzdy by se delal upgrade k verzi o jedno nizsi, takze prvni commit by v upgradu jen ze neni z ceho upgradovat
+}
