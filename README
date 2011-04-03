@@ -26,3 +26,41 @@ CONCEPT:
   dovecot+postfix+postgrey+spamassassin, if mx master or backup)
 - Performs incremental backups of machine state (/etc, list of installed
   packages, etc. - based on conf-update, maybe fillup/fillup-ng - 2011 gsoc)
+
+
+DEVNOTES (please ignore):
+conf-update: keeping track of CONFIG_PROTECT files never touched by user by
+a) keeping checksums of revisions in a manifest
+b) inotify rules over CONFIG_PROTECT dirs
+conf-update handles
+a) files not edited by users
+b) files changed by mage during installation [i.e. using sed to change
+   IP=0.0.0.0 to IP=192.168.1.100]
+c) files edited by users
+
+if b) is done via /etc/portage/bashrc
+post_src_install() {
+    mage-patch "${D}" # this line's wrong, just giving the general idea
+                      # needs to look into portage bashrc hooks and variables
+}
+
+then, if mage wishes to perform changes, in the bashrc hook it would
+apply own patches, replace strings or replace whole files.
+
+then b=c from conf-updates point of view. if that cant be done this way then:
+
+balicek instaluji poprve
+1) emerge balicek
+2) portage nainstaluje /etc/balicek.conf
+3) mage schova nekam co nainstaloval portage, pak to v /etc sed-ne configurak
+   nebo ten portageovskej nahradi vlastnim. hotovo.
+
+balicek reinstaluji nebo updatuji
+1) emerge balicek
+2) portage nainstaluje /etc/._cfg0000_balicek.conf
+3) mage porovna /etc/._cfg0000_balicek.conf s /var/mage/schovavacka/balicek.conf
+   (diff). pak se pokusi tento diff aplikovat na /etc/balicek.conf [tim se
+   osetri napr. to ze se treba zmeni komentare nebo se prida do konfiguraku
+   nejaka drobnost], pokud to nejde, nahodi interakci
+4) hotovo.
+!! bod 3 hrozi ze se prida neco co se nema (upstream zmeni default config)
