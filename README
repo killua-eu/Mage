@@ -64,3 +64,67 @@ balicek reinstaluji nebo updatuji
    nejaka drobnost], pokud to nejde, nahodi interakci
 4) hotovo.
 !! bod 3 hrozi ze se prida neco co se nema (upstream zmeni default config)
+
+tedy, u balicku ktere si upravi sam uzivatel nebo mu je upravi mage, pricemz
+typicka uprava bude treba nastaveni nejake LISTEN direktivy:
+zmena IP=0.0.0.0 na IP=192.168.1.100.
+
+v pripade mage uprav konfigu to neni problem, protoze mage proste vezme novou
+verzi konfiguraku a upravi ji k obrazu svemu. takto upravena verze pak bude to
+co bude conf-update porovnavat se starou verzi.
+
+blbe to je v pripade, kdy se uzivatel dotkl souboru jakkoliv jinak nez magem a
+neco si tam dopsal. klasika je ze to proste rucne odmergujes. co by se mi ale
+libilo vice by bylo to, ze inotify hlidac po uzivatelske zmene bude mit
+zazalohovany original i uzivatelem upravenou verzi. kdyz pak prijde nova verze
+z portage, pak by mage umel udelat diff z originalu a uzivatelsky upravene verze
+a tento diff by se pokusil aplikovat na novou upstream verzi.
+kontrolu vysledku a pripadne nevyresene konflikty by pak nechal uzivateli na
+doreseni. vim ze se na to budes divat asi krz prsty ale gentoo dava hodne zabrat
+s tim jak tece na urovni konfiguraku. pokud by to byl problem, tak potom alespon
+verzovani uzivatelem udelanych zmen pres inotify protoze dokurvit neco se da
+velmi snadno :)
+
+Stare (puvodni zadani) k conf-updatu: 
+[1] ncurses rozhrani a colordiff (conf-update to ma)
+[2] schopnost rozpoznat soubory ktere editoval uzivatel
+- rozlisit je v rozhrani nejakym symbolem nebo odlisnou barvou
+- moznost vybrat vsechny uzivatelem nikdy needitovane confy (tedy gentoo
+  defaulty) a updatovat je
+[3] support pro mergovani externi aplikaci (at uz ncurses nebo graficka)
+[4] verzovani
+- melo by mit frontend!
+- revertni vse nebo vybrane neco k datu tomu a tomu
+- k jednotlivemu souboru prohlizet diffy k ruznym revizim, moznost mergovat
+- hlidani blizkosti preteceni / purgovani
+[5] vyvrcholeni: verzovani uzivatelem menenych souboru - nejlepe dependence na
+    incronu nebo necem takovem, nebo aspon user-invoked procesani CONFIG_PROTECT
+    adresaru a ulozeni toho co jeste ulozeno neni
+[6] vylepseny interaktivni mergovani (kde se krom rozdilu vlevo a vpravo da
+    videt i okolostojici text ktery se nemeni) - toto je ale asi spis na nejakou
+    separatni utilitku nebo nastaveni diffu ktere mozna existuje, ale nevim o
+    nem
+[7] mozna tomu celemu dat nove jmeno? ;)
+
+* urcite pouzit na CONFIG_PROTECT promennou - rika kde jsou vsude narvany
+konfiguracni soubory (tedy /etc, /usr/share/config atp.).
+* princip, jak rozpoznat uzivatelem nikdy needitovane soubory: dvojim zpusobem.
+  a) neprimo tim ze bych ke kazdemu souboru bych drzel checksumy revizi
+  b) ale hlavne tim ze by se nad /etc (resp. vsemi CONFIG_PROTECT adresari)
+     drzelo inotify pravidlo ktere by zalogovalo zmenu. kazda zmena by se pak
+     zalogovala. a pokud by nebyla zparovana s aktivitou emerge/mage, tak by se
+     soubor oznacil nejakym user-taint flagem
+
+Q: moznost vybrat vsechny uzivatelem nikdy needitovane confy (gentoo/mage defs)
+to se ma resit libovolna zmena? i treba zmena provedena nejakym toolem?
+A: ano, libovolna zmena. neplati jen pro tooly portage a mage, vysvetleno vyse.
+Q: u toho verzovani chces verzovat zvlast gentoo defaulty i vysledny konfigurak?
+A: prijde mi ze nejlepsi je verzovat vse pohromade ale soubory, ktere jsou
+   zmeneny jinak nez portage/mage, tedy i ty ktere vyplivne conf-update a budou
+   se lisit od tech defaultu, tak tem bych nastavil nejaky user-edited flag.
+Q: tedy pokud udelas zmenu z A do B a pak zpet do A, tak ti ulozi tri soubory
+1.A  2.B   3.A, zatimco to, co popisujes ty, by udelalo jen dva soubory ..
+A: uh? nerozumim.
+Q: jak se budou resit casove znacky, bude stacit jen ciselny index s tim, ze se
+necha casova znacka souboru nezmenena?
+A: casove znacky ktereho souboru prosim?
