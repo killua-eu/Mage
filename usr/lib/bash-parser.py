@@ -3,7 +3,7 @@
 ######################################################################
 # -*- coding: utf-8 -*-                                              #
 #                                                                    #
-# FILE : bash_parser.py                                              #
+# FILE : bash-parser.py                                              #
 # CREATION DATE : 04-SEP-2011                                        #
 # LAST MODIFICATION DATE : 04-SEP-2011                               #
 #                                                                    #
