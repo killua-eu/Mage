@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 memfree=`free -m | grep buffers/cache | cut --delimiter=' ' -f17`
+memfree=2550
 alloc=$[$memfree-250]
 [[ ${alloc} -lt 400 ]] && echo "Not enough memory (${memfree} MB available), exiting." && exit
 echo "Allocating ${alloc} MB for tmpfs"

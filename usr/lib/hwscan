@@ -65,7 +65,7 @@ hw['vga']['usedrv'] = read_cmd_stdout("lspci -v | sed -n '/VGA/,/^$/p' | grep 'K
 dump_value("hw['vga']['usedrv']",hw['vga']['usedrv'],debug_hwscan)
 
 # ls /dev/sd*, delete those ending with a number, hdparm $device, grep for t10/t13 support, count lines
-hw['block']['t10/t13'] = int(read_cmd_stdout("for d in `ls /dev/sd* | sed '/.[0-9]/d'`; do hdparm -I ${d} | grep -e T13 -e T10; done | wc -l"))
+hw['block']['t10/t13'] = int(read_cmd_stdout("for d in `ls /dev/sd* | sed '/.[0-9]/d'`; do hdparm -I ${d} 2> /dev/null | grep -e T13 -e T10; done | wc -l"))
 dump_value("hw['block']['t10/t13']",hw['block']['t10/t13'],debug_hwscan)
 
 hw['cpu']['vendor'] = read_cmd_stdout("cat /proc/cpuinfo | grep vendor_id | tail -n 1 |cut -d"":"" -f2- | cut -b2-")

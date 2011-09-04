@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+[[ "${1}" = "-h" || "${1}" = "--help" || "${1}" = "" ]] && echo -e "
+numa-maps-summary shows a numa maps summary for given process.:
+The output should look something like the following:
+
+     N0        :      7983584 ( 30.45 GB)
+     N1        :      5440464 ( 20.75 GB)
+     active    :     13406601 ( 51.14 GB)
+     anon      :     13422697 ( 51.20 GB)
+     dirty     :     13407242 ( 51.14 GB)
+     mapmax    :          977 (  0.00 GB)
+     mapped    :         1377 (  0.01 GB)
+     swapcache :      3619780 ( 13.81 GB)
+
+Read more at http://jcole.us/blog/archives/2010/09/28/mysql-swap-insanity-and-the-numa-architecture/
+
+Call with numa-maps-summary <pid>" && exit
+perl ./numa-maps-summary.pl < /proc/${1}/numa_maps
