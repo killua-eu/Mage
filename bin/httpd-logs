@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#srclog="/var/log/apache2/access_log"
+srclog="/home/pavel/access_log"
+
+wrkdir="/var/tmp/logs"
+outdir="/var/www/localhost/htdocs/admin/webalizer/"
+
+[[ ! -d ${wrkdir} ]] && mkdir -p ${wrkdir}
+cd ${wrkdir}
+split-logfile < ${srclog}
+
+for file in `dir -d *.log` ; do 
+  dn=`echo ${file} | rev | cut -c 5- | rev`;
+  echo "${dn}" ;
+  [[ ! -d ${outdir}${dn} ]] && mkdir ${outdir}${dn}
+  webalizer -n ${dn} -o /var/www/localhost/htdocs/admin/webalizer/${dn} ${wrkdir}/${file};
+done ;
+
+rm ${wrkdir}/*
+
