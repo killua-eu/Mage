@@ -1,0 +1,18 @@
+# Apache2 logrotate snipet for Gentoo Linux
+# for Mage's httpd-logs script
+#
+/var/log/apache2/*log {
+  missingok
+  daily
+  size 150M
+  compress
+  notifempty
+  rotate 3
+  sharedscripts
+  prerotate
+      /usr/local/bin/httpd-logs > /dev/null 2>&1 || true
+  endscript
+  postrotate
+      /etc/init.d/apache2 reload > /dev/null 2>&1 || true
+  endscript
+}
