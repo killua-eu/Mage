@@ -1,0 +1,5 @@
+
+# configure make.conf - seskladat z fragmentu, ktere se budou includovat
+# NASTAVUJEM JINOU CESTU PRO PORTAGE
+mirrorselect -i -o >> /mnt/gentoo/etc/portage/make.conf
+mirrorselect -i -r -o >> /mnt/gentoo/etc/portage/make.conf

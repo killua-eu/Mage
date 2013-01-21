@@ -1,0 +1,7 @@
+temerge @desktop-base
+# following services are recquired by networkmanager
+rc-update add dbus default
+rc-update add udev sysinit
+rc-update add consolekit default
+rc-update add bluetooth default
+rc-update add NetworkManager default

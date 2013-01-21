@@ -1,0 +1,9 @@
+
+tmerge @desktop-kde
+rc-update add xdm default
+usermod -a -G games pavel
+echo XSESSION="KDE" > /etc/env.d/90xsession
+env-update && source /etc/profile
+rc-update add alsasound boot
+revdep-rebuild
+

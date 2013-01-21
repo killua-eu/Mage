@@ -1,0 +1,26 @@
+# nano -w /etc/conf.d/hostname
+ hostname="tux"
+
+# nano -w /etc/conf.d/net
+ dns_domain_lo="localnet"
+
+# nano -w /etc/hosts
+ 127.0.0.1     tux.localnet tux localhost
+ ::1	       tux.localnet tux localhost
+
+# nano -w /etc/locale.gen
+en_US.UTF-8 UTF-8 
+
+/etc/env.d/02locale
+
+echo "
+LANG="en_US.UTF-8"
+LC_COLLATE="C"
+" > /etc/env.d/02locale
+
+locale-gen 
+env-update && source /etc/profile
+
+passwd
+useradd -m -G users,audio,cdrom,wheel,floppy,lp,usb pavel  # rozdelit na casti!!
+usermod -a -G plugdev,uucp pavel

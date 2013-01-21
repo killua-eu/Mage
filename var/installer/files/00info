@@ -1,0 +1,7 @@
+
+echo "Please check current datetime"
+date
+# TODO test internet connection, if it fails do:
+  echo "please follow the gentoo handbook to connect to internet."
+  #exit to shell
+

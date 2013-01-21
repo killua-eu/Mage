@@ -1,0 +1,7 @@
+temerge @base
+rc-update add syslog-ng default
+rc-update add vixie-cron default
+rc-update add sshd default
+
+temerge @mage
+eselect bashcomp enable --global gentoo 

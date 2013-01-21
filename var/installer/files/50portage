@@ -1,0 +1,14 @@
+
+mkdir -p /var/portage/portage
+emerge-webrsync
+emerge --sync --quiet
+#eselect profile set ..... nastavit na amd64/13.0/desktop
+mkdir /etc/portage/sets
+#nakopirovat zde sety
+cd /usr/local/sbin/mage
+wget https://raw.github.com/Vaizard/Mage/master/bin/tmerge
+chmod +x tmerge
+echo 'export PATH="$PATH":/usr/local/sbin/mage' >> /root/.bashrc
+source /root/.bashrc
+temerge mc eix flaggie
+eix-sync

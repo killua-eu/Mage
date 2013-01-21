@@ -1,0 +1,22 @@
+
+if INFO {
+	parted -s $DEV print
+}
+
+if DOSYSTEM-512 {
+	parted -s -- $DEV mklabel gpt
+    parted -s -- $DEV mkpart primary linux-swap 1mb 2048mb # swap
+    parted -s -- $DEV mkpart primary ext4 2048mb -1mb      # root+boot
+	parted -s -- $DEV set 2 boot on      				   # set boot flag
+	mkswap /dev/sda1
+	swapon /dev/sda1
+	mkfs.ext4 /dev/sda2
+	# write which partition has root and boot!!
+	mount /dev/sda2 /mnt/gentoo
+	mkdir /mnt/gentoo/boot
+echo "
+    /dev/sda1   none         swap    sw                                      0 0
+	/dev/sda2   /            ext4    defaults,noatime,nodiratime,discard     0 1
+" > /etc/fstab	
+	}	
+

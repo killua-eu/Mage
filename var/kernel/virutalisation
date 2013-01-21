@@ -1,0 +1,7 @@
+# virtualisation
+KSM=y
+VIRT_DRIVERS=y
+KVM=m
+KVM_INTEL=m
+KVM_AMD=m
+VHOST_NET=m

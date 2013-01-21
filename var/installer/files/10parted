@@ -1,0 +1,10 @@
+
+if INFO {
+	parted -s $DEV print
+}
+
+#TODO select from possible partition layouts /var/partition
+#if laptop.ssd.512 {
+#  execute the partition layout scheme file 
+#	}	
+
