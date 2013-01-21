@@ -1,1 +1,18 @@
 grub2-install --no-floppy /dev/sda
+
+ CONFIG_EFI and CONFIG_EFI_PARTITION options enabled, CONFIG_FB_EFI and CONFIG_EFI_VARS 
+ 
+ parted ... 100mb, fat32, boot flag
+ mkdosfs -F 32 -n efi-boot
+ sys-fs/dosfstools
+ # cat /etc/fstab | grep efi-boot
+LABEL=efi-boot   /boot   vfat   defaults   0 2
+# mount /boot
+
+# mkdir -p /boot/grub2
+# cp /lib/grub2/x86_64-efi/* /boot/grub2/
+# grub2-mkimage -p /grub2 -o /boot/grub2/grub.efi -O x86_64-efi part_msdos part_gpt fat
+
+# mkdir -p /boot/EFI/BOOT
+# cp /boot/grub2/grub.efi /boot/EFI/BOOT/BOOTX64.EFI
+# grub2-editenv - create
