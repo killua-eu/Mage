@@ -47,9 +47,9 @@ keypath="/home/${user}/.ssh"
 [[ `whoami` != "root" ]] && [[ `whoami` != "${user}" ]] && echo "[FAIL] Can't create key for user  unless logged in as '${user}' or 'root'." && exit
 [[ `cat /proc/sys/kernel/random/entropy_avail` -lt 500 ]] && echo "[FAIL] Low entropy (<500). As a security requirenement, please add more entropy by starting timer_entropyd '/etc/init.d/timer_entropyd start'" && exit
 
-run="ssh-keygen -b 8192 -t rsa ${constraint} -f ${keypath}/${keyname}"
+run="ssh-keygen -b 16384 -t rsa ${constraint} -f ${keypath}/${keyname}"
 [[ ${comment} != "" ]] && run="${run} -C \"${comment}\""
-echo " * Creating a new 8192 bit rsa-key for user '${user}' with:"
+echo " * Creating a new 16384 bit rsa-key for user '${user}' with:"
 echo " * $run"
 echo " * This will take some time ..."
 eval ${run}
