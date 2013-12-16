@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-[[ "${1}" = "-h" || "${1}" = "--help" ]] && echo -e "Keychain-addkey is a frontend script to ssh-keygen. Usage:
+[[ "${1}" = "-h" || "${1}" = "--help" ]] && echo -e "keychain-addkey is a frontend script to ssh-keygen. Usage:
 keychain-addkey [user] [key-name] [comment] [constraint]
 
     Multiple certificate constraints can be specified when signing a key:
@@ -30,7 +30,7 @@ keychain-addkey [user] [key-name] [comment] [constraint]
 " && exit
 
                   
-echo "keychain-addkey v1.0 [mage-project]"
+echo "[mage] keychain-addkey v1.1"
 user=${1}
 keyname=${2}
 comment=${3}
@@ -72,7 +72,7 @@ if [ ${shell} = "bash" ] ; then
   if [ -n "`cat ${rc} | grep keychain`" ] ; then
     # append the new key to the line starting with "keychain"
     sedkey="~\/.ssh\/${keyname}"
-    sed -i "s/^keychain \(.*\)/\keychain \1 ${sedkey}/" `echo ${keypath} | rev | cut -b 6- | rev`/.bash_profile
+    sed -i "s/keychain \(.*\)/\keychain \1 ${sedkey}/" `echo ${keypath} | rev | cut -b 6- | rev`/.bash_profile
   else
     echo -e "
     keychain ~/.ssh/${keyname}
@@ -80,6 +80,6 @@ if [ ${shell} = "bash" ] ; then
     . ~/.keychain/$HOSTNAME-sh-gpg" >> ${rc}
   fi
 else
-  echo "[FAIL] Currently this script lacks support for shells different from bash"
+  echo "[WARN] Since your default shell isn't bash keychain-addkey didn't install a .bash_profile equivalent entry. Please do that yourself, thank you."
 fi 
 
