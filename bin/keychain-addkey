@@ -65,15 +65,14 @@ echo -n " * Identifying default shell ... "
 shell=`cat /etc/passwd | grep ${user} | sed 's/.*bin\///'`
 echo "${shell}"
 
-# TODO mechanism to add bashrc entry "keychain ~/.ssh/key1  ~/.ssh/key2  ~/.ssh/key3"
+# Adding a .bash_profile entry, such as "keychain ~/.ssh/key1  ~/.ssh/key2  ~/.ssh/key3"
 if [ ${shell} = "bash" ] ; then
   rc="`echo ${keypath} | rev | cut -b 4- | rev`bash_profile"
   echo -e " * Installing key into ${rc}"
   if [ -n "`cat ${rc} | grep keychain`" ] ; then
-    # add the new key to the line starting with "keychain" to get something like
-    # "keychain ~/.ssh/key1  ~/.ssh/key2  ~/.ssh/key3"
+    # append the new key to the line starting with "keychain"
     sedkey="~\/.ssh\/${keyname}"
-    sed -i "s/^keychain \(.*\)/\keychain \1 ${sedkey}/" `echo ${keypath} | rev | cut -b 4- | rev`/.bash_profile
+    sed -i "s/^keychain \(.*\)/\keychain \1 ${sedkey}/" `echo ${keypath} | rev | cut -b 6- | rev`/.bash_profile
   else
     echo -e "
     keychain ~/.ssh/${keyname}
