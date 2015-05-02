@@ -49,6 +49,37 @@ btrfs subvol create /mnt/btrfs/activeroot
 mount -t btrfs -o defaults,noatime,compress=lzo,autodefrag,subvol=activeroot /dev/sda4 /mnt/gentoo
 -o noatime,discard,ssd,autodefrag,compress=lzo,space_cache ${1}
 
+
+
+mkdir /mnt/gentoo/boot
+mount /dev/sda2 /mnt/gentoo/boot
+#Note
+#If /tmp/ needs to reside on a separate partition, be sure to change its permissions after mounting:
+root #chmod 1777 /mnt/gentoo/tmp
+btrfs subvol create /mnt/btrfs/home
+mount -t btrfs -o defaults,noatime,compress=lzo,autodefrag,subvol=home /dev/sda4 /mnt/gentoo/home
+btrfs subvol create /mnt/btrfs/distfiles
+btrfs subvol create /mnt/btrfs/vm
+btrfs subvol create /mnt/btrfs/vmcrypt
+btrfs subvol create /mnt/btrfs/tmp
+
+btrfs subvol create /mnt/btrfs/mysql
+
+PORTAGE_TMPDIR=/var/tmp # memory mapped
+PORTDIR=/usr/portage -> PORTDIR=/var/gentoo/portage
+DISTDIR=/usr/portage/distfiles -> /var/gentoo/distfiles
+PKGDIR=/usr/portage/packages -> /var/gentoo/packages
+PORTDIR_OVERLAY=/usr/local/portage -> PORTDIR_OVERLAY=/var/gentoo/local
+PORTDIR_OVERLAY=/usr/local/portage -> PORTDIR_OVERLAY=/var/gentoo/local
+/var/lib/layman -> /var/gentoo/layman
+
+root #btrfs subvol create /mnt/newmirror/distfiles
+root #mount -t btrfs -o defaults,noatime,autodefrag,subvol=distfiles /dev/sdc3 /mnt/newroot/distfiles
+root #btrfs subvol create /mnt/newmirror/vm
+root #mount -t btrfs -o defaults,noatime,compress=lzo,autodefrag,subvol=vm /dev/sdc3 /mnt/newroot/vm
+root #btrfs subvol create /mnt/newmirror/vmcrypt
+root #mount -t btrfs -o defaults,noatime,autodefrag,subvol=vmcrypt /dev/sdc3 /mnt/newroot/vmcrypt
+
 }
   
   
