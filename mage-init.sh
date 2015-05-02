@@ -38,7 +38,17 @@ mkswap /dev/sda3
 swapon /dev/sda3
 mkfs -t btrfs -L "sysroot" -m single -d single /dev/sda4
 
+# We mount the default volume for the root partition on /mnt/btrfs but will be putting
+# the actual contents into subvolumes with different btrfs features enabled or disabled. 
+mkdir /mnt/btrfs
+mount -t btrfs -o defaults,noatime,compress=lzo,autodefrag /dev/sda4 /mnt/btrfs
+# The new root filesystem will go onto a subvolume (activeroot) which is created on the 
+# btrfs disk and then mounted to /mnt/gentoo
+mkdir /mnt/gentoo
+btrfs subvol create /mnt/btrfs/activeroot
+mount -t btrfs -o defaults,noatime,compress=lzo,autodefrag,subvol=activeroot /dev/sda4 /mnt/gentoo
 -o noatime,discard,ssd,autodefrag,compress=lzo,space_cache ${1}
+
 }
   
   
