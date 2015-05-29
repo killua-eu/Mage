@@ -23,8 +23,9 @@ echo "Allocating ${alloc} MB for tmpfs"
 
 mounted=false
 
-
-echo ${PORTAGE_TMPDIR}
+# see if tmpdir is set, if not, set to a non-conflicting path & make the dir/tmpfs mountpoint
+[[ -z "${PORTAGE_TMPDIR}" ]] && PORTAGE_TMPDIR=/var/tmp/portage-tmpfs
+echo "PORTAGE_TMPDIR="${PORTAGE_TMPDIR}
 if [ ! -d "${PORTAGE_TMPDIR}" ]; then
   einfo "${PORTAGE_TMPDIR} (PORTAGE_TMPDIR) doesn't exist, creating ..."
   mkdir -p $PORTAGE_TMPDIR
