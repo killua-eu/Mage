@@ -40,7 +40,7 @@ mounttmpfs() {
 
 compile() {
         einfo "running emerge ${*}"
-        emerge ${*}
+        PORTAGE_TMPDIR="${PORTAGE_TMPDIR}" emerge ${*}
 }
 
 unmount() {
