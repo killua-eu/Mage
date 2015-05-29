@@ -40,7 +40,7 @@ mounttmpfs() {
 
 compile() {
         einfo "running emerge ${*}"
-                emerge ${*}
+        emerge ${*}
 }
 
 unmount() {
