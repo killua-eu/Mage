@@ -1,18 +1,33 @@
 #!/usr/bin/env bash
 
-memfree=`free -m | grep buffers/cache | cut --delimiter=' ' -f17`
-memfree=2550
-alloc=$[$memfree-250]
-[[ ${alloc} -lt 400 ]] && echo "Not enough memory (${memfree} MB available), exiting." && exit
+
+. /etc/mage.conf              # get conf file
+. /etc/init.d/functions.sh    # get gentoo functions
+. /etc/make.conf              # get make.conf (compat for old portage versions)
+. /etc/portage/make.conf      # get make.conf (current portage versions)
+
+# get available memory
+if [ "`free -m | grep available | awk '{print $NF}'`" == "available" ]  ; then 
+memfree=`free -m | grep Mem | awk '{print $NF}'`        # exact value available since kernel 3.14
+else
+memfree=`free -m | awk '{print $4}'| head -3| tail -1`  # compat value computation for kernel version < 3.14
+fi
+
+# Leave 200M free, require at least ${MAGE_TMERGE_ALLOC} set in /etc/mage.conf. 
+# If not set then use ${MAGE_TMERGE_ALLOC}=400
+
+alloc=$[$memfree-200]
+[[ -z "${MAGE_TMERGE_ALLOC}" ]] && MAGE_TMERGE_ALLOC=5500
+[[ ${alloc} -lt ${MAGE_TMERGE_ALLOC} ]] && echo "Not enough memory (${memfree} MB available), exiting. Set the default MAGE_TMERGE_ALLOC=5500 in /etc/mage.conf to a lower value, or free up some memory" && exit
 echo "Allocating ${alloc} MB for tmpfs"
 
 mounted=false
 
-. /etc/make.conf
-. /etc/init.d/functions.sh
 
-if [ -z "$PORTAGE_TMPDIR" ]; then
-  PORTAGE_TMPDIR="/var/tmp/portage"
+echo ${PORTAGE_TMPDIR}
+if [ ! -d "${PORTAGE_TMPDIR}" ]; then
+  einfo "${PORTAGE_TMPDIR} (PORTAGE_TMPDIR) doesn't exist, creating ..."
+  mkdir -p $PORTAGE_TMPDIR
 fi
 
 
@@ -58,4 +73,5 @@ $mounted && umount ${PORTAGE_TMPDIR}
 
 # set the cpu-governor to original state
 [ -f /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor ] && echo ${gov} > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+
 
