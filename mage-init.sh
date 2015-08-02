@@ -11,6 +11,15 @@ debug_parms() {
   done
 }
 
+bootstrap_net() {
+  echo "Use the following commands to configure / test the network:"
+  echo "     ping -c 3 google.com"
+  echo "Does it work? If not, do:"
+  echo "     ifconfig"
+  echo "     net-setup <device-name>"
+  echo "Test with ping. If still no joy, refer to the Gentoo Handbook."  
+}
+
 hw_hdd_sector_size() {
   # Prints HDD sector size
   # Call with a single string parameter (hdd device name), i.e. `hw_hdd_sector_size sda`
@@ -29,6 +38,8 @@ mk_partition() {
   ES=`sgdisk -E ${1}` ; sgdisk -n 4:${FS}:${ES} -c 4:"root" -t 4:8300 ${1}   # root partition
   sgdisk -p $1
 }
+
+
 
 mk_btrfs_single_perf {
 # set some global to see that mk_partition was run?
