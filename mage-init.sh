@@ -22,8 +22,8 @@ mk_partition() {
   # TODO: device ${1} exists check
   parted -a optimal ${1} mklabel gpt # convert mbr to gpt
   sgdisk -o ${1} # clear partition table
-  FS=`sgdisk -F ${1}` ; sgdisk -n 1:${FS}:4M -c 1:"biosboot" -t 1:ef02 ${1}	 # GRUB partition (4MB)
-  FS=`sgdisk -F ${1}` ; sgdisk -n 2:${FS}:400M -c 2:"boot" -t 2:8300 ${1}    # /boot partition (400M)
+  FS=`sgdisk -F ${1}` ; sgdisk -n 1:${FS}:8M -c 1:"biosboot" -t 1:ef02 ${1}	 # GRUB partition (4MB)
+  FS=`sgdisk -F ${1}` ; sgdisk -n 2:${FS}:500M -c 2:"boot" -t 2:8300 ${1}    # /boot partition (400M)
   FS=`sgdisk -F ${1}` ; sgdisk -n 3:${FS}:12GB -c 3:"swap" -t 3:8200 ${1}    # swap partition
   FS=`sgdisk -F ${1}` ; 
   ES=`sgdisk -E ${1}` ; sgdisk -n 4:${FS}:${ES} -c 4:"root" -t 4:8300 ${1}   # root partition
