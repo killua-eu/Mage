@@ -11,13 +11,29 @@ debug_parms() {
   done
 }
 
+bootstrap_user() {
+  echo "Set your root password by calling:"
+  echo "     passwd"
+  echo "Create a user for yourself:"
+  echo "     useradd -m -G users <username>"
+}
+
 bootstrap_net() {
   echo "Use the following commands to configure / test the network:"
   echo "     ping -c 3 google.com"
-  echo "Does it work? If not, do:"
+  echo "Does it work? If not do:"
   echo "     ifconfig"
   echo "     net-setup <device-name>"
-  echo "Test with ping. If still no joy, refer to the Gentoo Handbook."  
+  echo "where <device-name> is, for example, \"enp6s4f0\"."
+  echo "Test with ping. If still no joy, refer to the Gentoo Handbook." 
+  echo ""
+  echo "If you're bootstrapping a server over a physical remote"
+  echo "console (kvm/lom), fire up sshd now with"
+  echo "     /etc/init.d/sshd start"
+  echo "and finish the install over ssh from your laptop. Its"
+  echo "way more convenient. To connect to the server from your laptop,"
+  echo "just `ssh <username>@<ipaddress>`"
+  }
 }
 
 hw_hdd_sector_size() {
