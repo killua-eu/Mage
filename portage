@@ -1,0 +1,9 @@
+sys-apps/portage
+app-portage/cpuinfo2cpuflags
+app-portage/eix
+app-portage/genlop
+app-portage/layman
+app-portage/flaggie
+app-portage/pfl
+app-portage/portage-utils
+app-portage/smart-live-rebuild
