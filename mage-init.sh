@@ -14,14 +14,28 @@ debug_parms() {
 ### Install new machine
 
 helper_netsetup() {
-  echo "Use the following commands to configure / test the network:"
+  echo "Use the following to test network (with and without dns lookup):"
   echo "     ping -c 3 google.com"
+  echo "     ping -c 3 8.8.8.8"
   echo "Does it work? If not do:"
   echo "     ifconfig"
   echo "     net-setup <device-name>"
   echo "where <device-name> is, for example, \"enp6s4f0\"."
-  echo "Test with ping. If still no joy, refer to the Gentoo Handbook." 
+  echo "Test with ping. DNS problems can be sometimes worked around by"
+  echo "using the public DNS server from google. To do that, just"
+  echo "    echo "nameserver 8.8.8.8" >> /etc/resolv.conf" 
+  echo "If still no joy, refer to the Gentoo Handbook." 
 }
+
+As long as netsetup is a piece of crap, lets just use
+
+config_enp6s4f0="x.x.x.124 broadcast x.x.x.255 netmask 255.255.255.0"
+routes_enp6s4f0="default via x.x.x.254"
+metric_enp6s4f0="1"
+dns_servers_enp6s4f0="x.x.x.124 y.y.y.y z.z.z.z 8.8.8.8"
+dns_domain="ravu.maj.domain"
+
+
 
 local_install_hello() {
   helper_netsetup;
@@ -41,11 +55,6 @@ remote_install_hello() {
   echo "over ssh by issuing `ssh <username>@<ipaddress>`"
 }
 
-set_date() {
-  echo "Current date is hopefully:"
-  date
-  echo "Is this correct? If not, set current date to avoid an insane install."
-}
 #######################################################################
 
 hw_hdd_sector_size() {
@@ -100,8 +109,62 @@ swapon /dev/md1
 
 #######################################################################
 
+check_date() {
+  echo "Is this the correct date?"
+  date
+  echo "If not, set propper date with `date` command to avoid an insane install."
+}
+
+fetch_stage3() {
+  cd /mnt/gentoo
+  echo "Fetch stage3"
+  echo "links http://ftp.fi.muni.cz/pub/linux/gentoo/releases/amd64/autobuilds/current-stage3-amd64"
+  echo "wget http://ftp.fi.muni.cz/pub/linux/gentoo/releases/amd64/autobuilds/current-stage3-amd64/stage3-amd64-20150730.tar.bz2"
+  tar xvjpf stage3-*.tar.bz2 --xattrs
+  #TODO wget lepší make conf.
+  # nastav makeopts jako pocet jader+1
+  echo "MAKEOPTS=\"-j"$((`nproc` + 1))\" >> /mnt/gentoo/etc/portage/make.conf
+  cpuinfo2cpuflags-x86 >> /etc/portage/make.conf # test if admin stage got it
+  cp -L /etc/resolv.conf /mnt/gentoo/etc/
+  mount -t proc proc /mnt/gentoo/proc
+  mount --rbind /sys /mnt/gentoo/sys
+  mount --make-rslave /mnt/gentoo/sys
+  mount --rbind /dev /mnt/gentoo/dev
+  mount --make-rslave /mnt/gentoo/dev
+  #entering chroot
+  chroot /mnt/gentoo /bin/bash
+  source /etc/profile
+  export PS1="(chroot) $PS1"
+  emerge-webrsync
+  eselect profile list # select hardened/linux/amd64
+  ls /usr/share/zoneinfo
+  echo "Europe/Prague" > /etc/timezone
+  emerge --config sys-libs/timezone-data
+  echo "en_US ISO-8859-1
+en_US.UTF-8 UTF-8" >> /etc/locale.gen
+  locale-gen
+  eselect locale list # select en_US.utf8
+  mkdir -p /etc/portage/{package.mask,package.unmask,sets,repos.conf,package.accept_keywords,package.use,env,package}
+  flaggie dracut +amd64 
+  # install @portagetools
+  # eix-update
+  
+  mkdir -p /var/mage/repos
+  ln -s /usr/portage /var/mage/repos/gentoo
+  ln -s /usr/local/portage /var/mage/repos/local
+  ln -s /var/lib/layman /var/mage/repos/layman
+  ln -s /usr/lib/portage /var/mage/repos/layman
+  {gentoo,distfiles,local,layman}
+  mkdir -p /tmp/portage
+  mv /usr/portage/* /var/portage/gentoo/
 
 
+  
+}
+
+systemd_shit() {
+  ln -sf /proc/self/mounts /etc/mtab
+}
 #######################################################################
 #######################################################################
 #######################################################################
