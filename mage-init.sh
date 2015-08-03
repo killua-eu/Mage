@@ -11,14 +11,9 @@ debug_parms() {
   done
 }
 
-bootstrap_user() {
-  echo "Set your root password by calling:"
-  echo "     passwd"
-  echo "Create a user for yourself:"
-  echo "     useradd -m -G users <username>"
-}
+### Install new machine
 
-bootstrap_net() {
+helper_netsetup() {
   echo "Use the following commands to configure / test the network:"
   echo "     ping -c 3 google.com"
   echo "Does it work? If not do:"
@@ -26,14 +21,24 @@ bootstrap_net() {
   echo "     net-setup <device-name>"
   echo "where <device-name> is, for example, \"enp6s4f0\"."
   echo "Test with ping. If still no joy, refer to the Gentoo Handbook." 
-  echo ""
-  echo "If you're bootstrapping a server over a physical remote"
-  echo "console (kvm/lom), fire up sshd now with"
-  echo "     /etc/init.d/sshd start"
-  echo "and finish the install over ssh from your laptop. Its"
-  echo "way more convenient. To connect to the server from your laptop,"
-  echo "just `ssh <username>@<ipaddress>`"
-  }
+}
+
+local_install_hello() {
+  helper_netsetup;
+}
+
+remote_install_hello() {
+  helper_netsetup;
+  echo "Once network is up,"
+  echo "* start sshd:"
+  echo "    /etc/init.d/sshd start"
+  echo "* set a temporary (install-time) root password"
+  echo "    passwd"
+  echo "* create a temporary (install-time) user"
+  echo "    useradd -m -G users <username>"
+  echo "    passwd <username>"
+  echo "You're now ready to connect to the installation environment"
+  echo "over ssh by issuing `ssh <username>@<ipaddress>`"
 }
 
 hw_hdd_sector_size() {
