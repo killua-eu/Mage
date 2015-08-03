@@ -3,3 +3,4 @@ dev-util/lockrun
 app-admin/syslog-ng
 app-admin/logrotate
 net-misc/ntp
+sys-apps/timer_entropyd
