@@ -6,4 +6,4 @@ app-shells/gentoo-bashcomp
 app-text/wgetpaste
 net-misc/keychain
 sys-process/lsof
-
+dev-libs/libisoburn
