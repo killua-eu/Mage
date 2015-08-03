@@ -41,6 +41,13 @@ remote_install_hello() {
   echo "over ssh by issuing `ssh <username>@<ipaddress>`"
 }
 
+set_date() {
+  echo "Current date is hopefully:"
+  date
+  echo "Is this correct? If not, set current date to avoid an insane install."
+}
+#######################################################################
+
 hw_hdd_sector_size() {
   # Prints HDD sector size
   # Call with a single string parameter (hdd device name), i.e. `hw_hdd_sector_size sda`
@@ -57,11 +64,47 @@ mk_partition() {
   FS=`sgdisk -F ${1}` ; sgdisk -n 3:${FS}:12GB -c 3:"swap" -t 3:8200 ${1}    # swap partition
   FS=`sgdisk -F ${1}` ; 
   ES=`sgdisk -E ${1}` ; sgdisk -n 4:${FS}:${ES} -c 4:"root" -t 4:8300 ${1}   # root partition
-  sgdisk -p $1
+  sgdisk -p ${1}
 }
 
+mk_btrfs_raid1_root {
+dev1=${1};
+dev2=${2};
+dev1=/dev/sda4
+dev2=/dev/sdb4
+# TODO: warn that this is a desctructive process due to -f in mkfs.btrfs
+mkfs.btrfs -f -L "root" -d raid1 -m raid1 ${dev1} ${dev2}
+mkdir /mnt/btrfs
+mount -t btrfs -o defaults,noatime,compress=lzo,autodefrag ${dev1} /mnt/btrfs
+btrfs subvolume create /mnt/btrfs/root
+umount /mnt/btrfs
+mount -t btrfs -o defaults,noatime,compress=lzo,autodefrag,subvol=root ${dev1} /mnt/gentoo
+btrfs subvol create /mnt/gentoo/home
+mount -t btrfs -o defaults,noatime,compress=lzo,autodefrag,subvol=home /dev/sda4 /mnt/gentoo/home
+}
+
+mk_ext4_mdraid1_boot {
+mdadm --create /dev/md0 --name boot --level 1 --metadata 0.9 --raid-devices=2 /dev/sda2 /dev/sdb2
+mkfs.ext4 -L boot /dev/md0
+mkdir /mnt/gentoo/boot
+mount /dev/md0 /mnt/gentoo/boot
+}
+
+md_swap_mdraid1 {
+# Swapping on a mirrored RAID can help you survive a failing disk. If a disk fails, 
+# then data for swapped processes would be inaccessable in a non-mirrored environment.
+mdadm --create /dev/md1 --name boot --level 1 --metadata 0.9 --raid-devices=2 /dev/sda3 /dev/sdb3
+mkswap /dev/md1
+swapon /dev/md1
+}
+
+#######################################################################
 
 
+
+#######################################################################
+#######################################################################
+#######################################################################
 mk_btrfs_single_perf {
 # set some global to see that mk_partition was run?
 # if mk_partition works on /dev/sda, then the parameter should be /dev/sda
