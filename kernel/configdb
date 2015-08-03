@@ -1,3 +1,5 @@
+CONFIG_BLK_DEV_INITRD=Y             sys-kernel/dracut-043
+CONFIG_DEVTMPFS=Y                   sys-kernel/dracut-043
 CONFIG_AUTOFS4_FS=Y                 sys-apps/systemd-218
 CONFIG_DEVPTS_MULTIPLE_INSTANCES=Y  sys-apps/systemd-218
 CONFIG_FANOTIFY=Y                   sys-apps/systemd-218
