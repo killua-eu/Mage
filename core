@@ -1,0 +1,5 @@
+app-admin/logrotate
+app-admin/syslog-ng
+dev-util/lockrun
+net-misc/ntp
+sys-apps/timer_entropyd
