@@ -1,0 +1,5 @@
+CONFIG_AUTOFS4_FS=Y                 sys-apps/systemd-218
+CONFIG_DEVPTS_MULTIPLE_INSTANCES=Y  sys-apps/systemd-218
+CONFIG_FANOTIFY=Y                   sys-apps/systemd-218
+CONFIG_FW_LOADER_USER_HELPER=N      sys-apps/systemd-218
+CONFIG_GRKERNSEC_PROC=N             sys-apps/systemd-218
