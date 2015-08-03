@@ -1,0 +1,6 @@
+sys-boot/os-prober
+sys-fs/btrfs-progs
+sys-fs/e2fsprogs
+sys-fs/dosfstools
+sys-boot/grub:2
+sys-fs/fuse
