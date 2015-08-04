@@ -124,7 +124,7 @@ fetch_stage3() {
   #TODO wget lepší make conf.
   # nastav makeopts jako pocet jader+1
   echo "MAKEOPTS=\"-j"$((`nproc` + 1))\" >> /mnt/gentoo/etc/portage/make.conf
-  cpuinfo2cpuflags-x86 >> /etc/portage/make.conf # test if admin stage got it
+
   cp -L /etc/resolv.conf /mnt/gentoo/etc/
   mount -t proc proc /mnt/gentoo/proc
   mount --rbind /sys /mnt/gentoo/sys
@@ -145,9 +145,15 @@ en_US.UTF-8 UTF-8" >> /etc/locale.gen
   locale-gen
   eselect locale list # select en_US.utf8
   mkdir -p /etc/portage/{package.mask,package.unmask,sets,repos.conf,package.accept_keywords,package.use,env,package}
+  # download sets
+  emerge @portage
   flaggie dracut +amd64 
-  # install @portagetools
-  # eix-update
+  cpuinfo2cpuflags-x86 >> /etc/portage/make.conf # test if admin stage got it
+  eix-update
+  eix-sync
+  emerge -uDN @kernel @boot @core @tools
+  cd /usr/src/linux
+  make nconfig
   
   mkdir -p /var/mage/repos
   ln -s /usr/portage /var/mage/repos/gentoo
@@ -164,6 +170,8 @@ en_US.UTF-8 UTF-8" >> /etc/locale.gen
 
 systemd_shit() {
   ln -sf /proc/self/mounts /etc/mtab
+  emerge --unmerge virtual/libudev sysfs/udev
+  emerge sys-apps/systemd
 }
 #######################################################################
 #######################################################################
@@ -221,3 +229,8 @@ root #mount -t btrfs -o defaults,noatime,autodefrag,subvol=vmcrypt /dev/sdc3 /mn
 }
   
   
+
+ * Messages for package mail-mta/nullmailer-1.13-r5:
+
+ * To create an initial setup, please do:
+ * emerge --config =mail-mta/nullmailer-1.13-r5
