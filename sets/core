@@ -3,4 +3,5 @@ app-admin/syslog-ng
 dev-util/lockrun
 net-misc/ntp
 sys-apps/timer_entropyd
+sys-apps/smartmontools
 sys-process/vixie-cron
