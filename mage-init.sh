@@ -154,6 +154,8 @@ en_US.UTF-8 UTF-8" >> /etc/locale.gen
   emerge -uDN @kernel @boot @core @tools
   cd /usr/src/linux
   make nconfig
+  make && make modules_install
+  make install # copy stuff to /boot
   
   mkdir -p /var/mage/repos
   ln -s /usr/portage /var/mage/repos/gentoo
@@ -163,8 +165,12 @@ en_US.UTF-8 UTF-8" >> /etc/locale.gen
   {gentoo,distfiles,local,layman}
   mkdir -p /tmp/portage
   mv /usr/portage/* /var/portage/gentoo/
-
-
+  mkdir -p /boot/efi/boot
+  cp /boot/vmlinuz-* /boot/efi/boot/bootx64.efi
+  dracut --hostonly 
+  emerge sys-boot/grub
+  grub2-install /dev/sda
+  grub2-mkconfig -o /boot/grub/grub.cfg
   
 }
 
