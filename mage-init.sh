@@ -55,6 +55,21 @@ remote_install_hello() {
   echo "over ssh by issuing `ssh <username>@<ipaddress>`"
 }
 
+failed() {
+  remote_install_hello();
+  mount -t btrfs -o defaults,noatime,compress=lzo,autodefrag,subvol=root /dev/sda4 /mnt/gentoo
+  mount /dev/md126 /mnt/gentoo/boot
+  cp -L /etc/resolv.conf /mnt/gentoo/etc/
+  mount -t proc proc /mnt/gentoo/proc
+  mount --rbind /sys /mnt/gentoo/sys
+  mount --make-rslave /mnt/gentoo/sys
+  mount --rbind /dev /mnt/gentoo/dev
+  mount --make-rslave /mnt/gentoo/dev
+  #entering chroot
+  chroot /mnt/gentoo /bin/bash  
+
+}
+
 #######################################################################
 
 hw_hdd_sector_size() {
@@ -168,10 +183,21 @@ en_US.UTF-8 UTF-8" >> /etc/locale.gen
   mkdir -p /boot/efi/boot
   cp /boot/vmlinuz-* /boot/efi/boot/bootx64.efi
   dracut --hostonly 
-  emerge sys-boot/grub
   grub2-install /dev/sda
+  grub2-install /dev/sdb
   grub2-mkconfig -o /boot/grub/grub.cfg
-  
+  # errors
+  #  /run/lvm/lvmetad.socket: connect failed: No such file or directory
+  # WARNING: Failed to connect to lvmetad. Falling back to internal scanning.
+  # No volume groups found
+  # can be ignored
+  echo "
+# <fs>              <mountpoint>    <type>      <opts>                                              <dump/pass>
+LABEL="boot"        /boot           ext2        noauto,noatime                                          1 2
+LABEL="root"        /               brtfs       defaults,noatime,compress=lzo,autodefrag,subvol=root    0 1
+LABEL="root"        /home           brtfs       defaults,noatime,compress=lzo,autodefrag,subvol=home    0 1
+LABEL="swap"        none            swap        sw                                                      0 0
+" >> /etc/fstab
 }
 
 systemd_shit() {
