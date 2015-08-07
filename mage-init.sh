@@ -204,6 +204,9 @@ LABEL="swap"        none            swap        sw                              
  ####
  nano -w /etc/conf.d/hostname  # nejede augtool  ls /etc/conf.d/hostname
  nano -w /etc/conf.d/net
+ useradd -m -G users,wheel,portage -s /bin/bash pavel
+ passwd
+ passwd pavel
 
 systemd_shit() {
   ln -sf /proc/self/mounts /etc/mtab
