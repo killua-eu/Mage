@@ -49,7 +49,7 @@ remote_install_hello() {
   echo "* set a temporary (install-time) root password"
   echo "    passwd"
   echo "* create a temporary (install-time) user"
-  echo "    useradd -m -G users <username>"
+  echo "    useradd -m -G users,wheel <username>"
   echo "    passwd <username>"
   echo "You're now ready to connect to the installation environment"
   echo "over ssh by issuing `ssh <username>@<ipaddress>`"
