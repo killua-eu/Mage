@@ -194,16 +194,22 @@ en_US.UTF-8 UTF-8" >> /etc/locale.gen
   echo "
 # <fs>              <mountpoint>    <type>      <opts>                                              <dump/pass>
 LABEL="boot"        /boot           ext2        noauto,noatime                                          1 2
-LABEL="root"        /               brtfs       defaults,noatime,compress=lzo,autodefrag,subvol=root    0 1
-LABEL="root"        /home           brtfs       defaults,noatime,compress=lzo,autodefrag,subvol=home    0 1
+LABEL="root"        /               brtfs       defaults,noatime,compress=lzo,autodefrag,subvol=root    0 0
+LABEL="root"        /home           brtfs       defaults,noatime,compress=lzo,autodefrag,subvol=home    0 0
 LABEL="swap"        none            swap        sw                                                      0 0
 " >> /etc/fstab
 }
+# todo: fstab ma nejaka preddefinovana cosi, co se musi zakomentovat
+ mdadm --detail --scan >> /etc/mdadm.conf
+ ####
+ nano -w /etc/conf.d/hostname  # nejede augtool  ls /etc/conf.d/hostname
+ nano -w /etc/conf.d/net
 
 systemd_shit() {
   ln -sf /proc/self/mounts /etc/mtab
   emerge --unmerge virtual/libudev sysfs/udev
   emerge sys-apps/systemd
+  echo "GRUB_CMDLINE_LINUX=\"init=/usr/lib/systemd/systemd\"" >> /etc/default/grub
 }
 #######################################################################
 #######################################################################
