@@ -4,6 +4,6 @@ app-portage/eix
 app-portage/flaggie
 app-portage/genlop
 app-portage/layman
-app-portage/pfl
+#app-portage/pfl
 app-portage/portage-utils
 app-portage/smart-live-rebuild
