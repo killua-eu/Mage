@@ -4,6 +4,6 @@ sys-fs/e2fsprogs
 sys-fs/dosfstools
 sys-boot/grub:2
 sys-fs/fuse
-sys-fs/mdadm
-sys-fs/multipath-tools
-sys-fs/dmraid
+#sys-fs/mdadm
+#sys-fs/multipath-tools
+#sys-fs/dmraid
