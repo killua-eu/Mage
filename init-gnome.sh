@@ -41,6 +41,8 @@ flaggie openssh -bindist
 https://raw.githubusercontent.com/killua-eu/Mage/master/sets/{unarchivers,czech,gnome-desktop}
 emerge -uDNa @boot @czech @gnome-desktop @kernel @portage @tools
 systemctl enable gdm.service
+ln -sf /proc/self/mounts /etc/mtab
+
 
 
 # todo
