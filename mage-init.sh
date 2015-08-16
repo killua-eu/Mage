@@ -59,14 +59,31 @@ failed() {
   remote_install_hello();
   mount -t btrfs -o defaults,noatime,compress=lzo,autodefrag,subvol=root /dev/sda4 /mnt/gentoo
   mount /dev/md126 /mnt/gentoo/boot
+  # toto zvlast
   cp -L /etc/resolv.conf /mnt/gentoo/etc/
   mount -t proc proc /mnt/gentoo/proc
   mount --rbind /sys /mnt/gentoo/sys
-  mount --make-rslave /mnt/gentoo/sys
   mount --rbind /dev /mnt/gentoo/dev
-  mount --make-rslave /mnt/gentoo/dev
+  mount --make-rslave /mnt/gentoo/{sys,dev}
   #entering chroot
+  rm /dev/shm && mkdir /dev/shm
+  mount -t tmpfs -o nosuid,nodev,noexec shm /dev/shm
+  chmod 1777 /dev/smh
   chroot /mnt/gentoo /bin/bash  
+
+  cp -L /etc/resolv.conf /media/gentoo/etc/
+  mount -t proc proc /media/gentoo/proc
+  mount --rbind /sys /media/gentoo/sys
+  mount --rbind /dev /media/gentoo/dev
+  mount --make-rslave /media/gentoo/{sys,dev}
+  #entering chroot
+  rm /dev/shm && mkdir /dev/shm
+  mount -t tmpfs -o nosuid,nodev,noexec shm /dev/shm
+  chmod 1777 /dev/shm
+  chroot /media/gentoo /bin/bash  
+  source /etc/profile
+  env-update
+
 
 }
 
