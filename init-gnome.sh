@@ -63,6 +63,7 @@ locale-gen
 localectl set-locale LANG=en_US.utf8
 timedatectl set-timezone Europe/Prague
 
+
 # todo
 * For passwordless login to unlock your keyring, you need to set an empty password on your keyring.
 * eselect gnome-shell-extensions
