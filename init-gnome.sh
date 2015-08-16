@@ -87,6 +87,7 @@ echo 'VIDEO_CARDS="intel modsetting v4l vesa"' >> /etc/portage/make.conf
 flaggie systemd
 flaggie openssl -bindist
 flaggie openssh -bindist
+https://raw.githubusercontent.com/killua-eu/Mage/master/sets/{unarchivers,czech,gnome-desktop}
 emerge -uDNa @boot @czech @gnome-desktop @kernel @portage @tools
 systemctl enable gdm.service
 # todo
