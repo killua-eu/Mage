@@ -41,9 +41,21 @@ flaggie openssh -bindist
 https://raw.githubusercontent.com/killua-eu/Mage/master/sets/{unarchivers,czech,gnome-desktop}
 emerge -uDNa @boot @czech @gnome-desktop @kernel @portage @tools
 systemctl enable gdm.service
+systemctl enable NetworkManager 
+echo 'VIDEO_CARDS="intel"' >> /etc/portage/make.conf
 ln -sf /proc/self/mounts /etc/mtab
-
-
+cd /usr/src/linux
+make nconfig
+make && make modules_install
+make install
+mkdir -p /boot/efi/boot
+cp /boot/vmlinuz-* /boot/efi/boot/bootx64.efi
+nano /etc/fstab
+passwd
+echo 'GRUB_CMDLINE_LINUX="rootfstype=ext4 real_init=/usr/lib/systemd/systemd"' >> /etc/default/grub
+grub2-install /dev/sda
+grub2-mkconfig -o /boot/grub/grub.cfg
+useradd -m -G users,wheel,audio,video,plugdev,portage,games,usb -s /bin/bash <user>
 
 # todo
 * For passwordless login to unlock your keyring, you need to set an empty password on your keyring.
