@@ -57,6 +57,11 @@ grub2-install /dev/sda
 grub2-mkconfig -o /boot/grub/grub.cfg
 useradd -m -G users,wheel,audio,video,plugdev,portage,games,usb -s /bin/bash <user>
 passwd <user>
+echo "en_US ISO-8859-1
+en_US.UTF-8 UTF-8" >> /etc/locale.gen
+locale-gen
+localectl set-locale LANG=en_US.utf8
+
 
 # todo
 * For passwordless login to unlock your keyring, you need to set an empty password on your keyring.
