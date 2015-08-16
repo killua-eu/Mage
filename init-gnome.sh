@@ -56,6 +56,7 @@ echo 'GRUB_CMDLINE_LINUX="rootfstype=ext4 real_init=/usr/lib/systemd/systemd"' >
 grub2-install /dev/sda
 grub2-mkconfig -o /boot/grub/grub.cfg
 useradd -m -G users,wheel,audio,video,plugdev,portage,games,usb -s /bin/bash <user>
+passwd <user>
 
 # todo
 * For passwordless login to unlock your keyring, you need to set an empty password on your keyring.
