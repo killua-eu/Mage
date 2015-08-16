@@ -32,6 +32,60 @@ fetch_stage3() {
   cd /etc/portage/sets/
   wget https://raw.githubusercontent.com/killua-eu/Mage/master/sets/{portage,boot,kernel,tools} #core nedavam
 
+#
+INOTIFY_USER glib
+systemd
+- AUTOFS4_FS
+ *  - BLK_DEV_BSG
+ *  - CGROUPS
+ *  - DEVPTS_MULTIPLE_INSTANCES
+ *  - DEVTMPFS
+ *  - DMIID
+ *  - EPOLL
+ *  - FANOTIFY
+ *  - FHANDLE
+ *  - INOTIFY_USER
+ *  - IPV6
+ *  - NET
+ *  - NET_NS
+ *  - PROC_FS
+ *  - SECCOMP
+ *  - SIGNALFD
+ *  - SYSFS
+ *  - TIMERFD
+ *  - TMPFS_XATTR
+ *  - !FW_LOADER_USER_HELPER
+ *  - !GRKERNSEC_PROC
+ *  - !IDE
+ *  - !SYSFS_DEPRECATED
+ *  - !SYSFS_DEPRECATED_V2
+ *  - TMPFS_POSIX_ACL
+
+
+	Kernel driver in use: ivb_uncore
+	Kernel driver in use: i915
+	Kernel driver in use: xhci_hcd
+	Kernel driver in use: mei_me
+	Kernel driver in use: e1000e
+	Kernel driver in use: ehci-pci
+	Kernel driver in use: snd_hda_intel
+	Kernel driver in use: pcieport
+	Kernel driver in use: pcieport
+	Kernel driver in use: pcieport
+	Kernel driver in use: ehci-pci
+	Kernel driver in use: lpc_ich
+	Kernel driver in use: ahci
+	Kernel driver in use: iwlwifi
+	Kernel driver in use: sdhci-pci
+80861e55	Yes	Intel Corporation	QM77 Express Chipset LPC Controller	iTCO_wdt	
+80861e22	Yes	Intel Corporation	7 Series/C210 Series Chipset Family SMBus Controller	i2c-i801	
+
+compare http://kmuto.jp/debian/hcl/index.rhtmlx lspci -n and lspci -v | grep Kernel
+
+echo 'INPUT_DEVICES="evdev libinput synaptics tslib wacom"' >> /etc/portage/make.conf
+echo 'VIDEO_CARDS="intel modsetting v4l vesa"' >> /etc/portage/make.conf
+
+#
 
 
   ls /usr/share/zoneinfo
@@ -157,3 +211,6 @@ root #mount -t btrfs -o defaults,noatime,autodefrag,subvol=vmcrypt /dev/sdc3 /mn
 
  * To create an initial setup, please do:
  * emerge --config =mail-mta/nullmailer-1.13-r5
+
+
+
