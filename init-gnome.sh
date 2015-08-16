@@ -32,55 +32,6 @@ fetch_stage3() {
   cd /etc/portage/sets/
   wget https://raw.githubusercontent.com/killua-eu/Mage/master/sets/{portage,boot,kernel,tools} #core nedavam
 
-#
-INOTIFY_USER glib
-systemd
-- AUTOFS4_FS
- *  - BLK_DEV_BSG
- *  - CGROUPS
- *  - DEVPTS_MULTIPLE_INSTANCES
- *  - DEVTMPFS
- *  - DMIID
- *  - EPOLL
- *  - FANOTIFY
- *  - FHANDLE
- *  - INOTIFY_USER
- *  - IPV6
- *  - NET
- *  - NET_NS
- *  - PROC_FS
- *  - SECCOMP
- *  - SIGNALFD
- *  - SYSFS
- *  - TIMERFD
- *  - TMPFS_XATTR
- *  - !FW_LOADER_USER_HELPER
- *  - !GRKERNSEC_PROC
- *  - !IDE
- *  - !SYSFS_DEPRECATED
- *  - !SYSFS_DEPRECATED_V2
- *  - TMPFS_POSIX_ACL
-
-
-	Kernel driver in use: ivb_uncore
-	Kernel driver in use: i915
-	Kernel driver in use: xhci_hcd
-	Kernel driver in use: mei_me
-	Kernel driver in use: e1000e
-	Kernel driver in use: ehci-pci
-	Kernel driver in use: snd_hda_intel
-	Kernel driver in use: pcieport
-	Kernel driver in use: pcieport
-	Kernel driver in use: pcieport
-	Kernel driver in use: ehci-pci
-	Kernel driver in use: lpc_ich
-	Kernel driver in use: ahci
-	Kernel driver in use: iwlwifi
-	Kernel driver in use: sdhci-pci
-80861e55	Yes	Intel Corporation	QM77 Express Chipset LPC Controller	iTCO_wdt	
-80861e22	Yes	Intel Corporation	7 Series/C210 Series Chipset Family SMBus Controller	i2c-i801	
-
-compare http://kmuto.jp/debian/hcl/index.rhtmlx lspci -n and lspci -v | grep Kernel
 
 echo 'INPUT_DEVICES="evdev libinput synaptics tslib wacom"' >> /etc/portage/make.conf
 echo 'VIDEO_CARDS="intel modsetting v4l vesa"' >> /etc/portage/make.conf
@@ -90,21 +41,20 @@ flaggie openssh -bindist
 https://raw.githubusercontent.com/killua-eu/Mage/master/sets/{unarchivers,czech,gnome-desktop}
 emerge -uDNa @boot @czech @gnome-desktop @kernel @portage @tools
 systemctl enable gdm.service
+
+
 # todo
 * For passwordless login to unlock your keyring, you need to set an empty password on your keyring.
 * eselect gnome-shell-extensions
 
-  * If you want to do display or scanner calibration, you will need to
- * install media-gfx/argyllcms
- Remember, in order to play games, you have to
+
  * be in the 'games' group.
  * Just run 'gpasswd -a <USER> games', then have <USER> re-login.
- krusader  * WARNING! Your system configuration does not contain "kde-apps/kdebase-runtime-meta".
-  * Messages for package x11-terms/gnome-terminal-3.14.3:
-
+ 
  * To get previous working directory inherited in new opened tab you
  * will need to add the following line to your ~/.bashrc:
  * . /etc/profile.d/vte.sh
+ * . /usr/libexec/mc/mc.sh
  * 
   * Messages for package sys-boot/grub-2.02_beta2-r7:
 
@@ -117,10 +67,8 @@ systemctl enable gdm.service
  *   dev-libs/libisoburn for Create rescue media (grub-mkrescue)
  *   sys-fs/mdadm for Enable RAID device detection
  
-  * To enable exiting to latest working directory,
- * put this into your ~/.bashrc:
- * . /usr/libexec/mc/mc.sh
-  sys-apps/usb_modemswitch
+ 
+ 
   **add yourself to plugdev
 
 
