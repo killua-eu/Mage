@@ -85,6 +85,10 @@ compare http://kmuto.jp/debian/hcl/index.rhtmlx lspci -n and lspci -v | grep Ker
 echo 'INPUT_DEVICES="evdev libinput synaptics tslib wacom"' >> /etc/portage/make.conf
 echo 'VIDEO_CARDS="intel modsetting v4l vesa"' >> /etc/portage/make.conf
 
+
+flaggie openssl -bindist
+flaggie openssh -bindist
+emerge -uDNa @boot @czech @gnome-desktop @kernel @portage @tools
 #
 
 
