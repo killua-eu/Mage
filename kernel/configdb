@@ -6,7 +6,8 @@ CONFIG_FANOTIFY=Y                   sys-apps/systemd-218
 CONFIG_FW_LOADER_USER_HELPER=N      sys-apps/systemd-218
 CONFIG_GRKERNSEC_PROC=N             sys-apps/systemd-218
 CONFIG_GENTOO_LINUX_INIT_SYSTEMD=Y  sys-apps/systemd
- 
+CONFIG_UEVENT_HELPER_PATH=""        sys-apps/systemd (CONFIG_UEVENT_HELPER_PATH="/sbin/hotplug" )
+TMPFS_XATTR=y
 ########### Mage
 ## BASE
 CONFIG_CC_STACKPROTECTOR_REGULAR=y gcc:4.8
