@@ -84,11 +84,50 @@ compare http://kmuto.jp/debian/hcl/index.rhtmlx lspci -n and lspci -v | grep Ker
 
 echo 'INPUT_DEVICES="evdev libinput synaptics tslib wacom"' >> /etc/portage/make.conf
 echo 'VIDEO_CARDS="intel modsetting v4l vesa"' >> /etc/portage/make.conf
-
-
+flaggie systemd
 flaggie openssl -bindist
 flaggie openssh -bindist
 emerge -uDNa @boot @czech @gnome-desktop @kernel @portage @tools
+systemctl enable gdm.service
+# todo
+* For passwordless login to unlock your keyring, you need to set an empty password on your keyring.
+* eselect gnome-shell-extensions
+
+  * If you want to do display or scanner calibration, you will need to
+ * install media-gfx/argyllcms
+ Remember, in order to play games, you have to
+ * be in the 'games' group.
+ * Just run 'gpasswd -a <USER> games', then have <USER> re-login.
+ krusader  * WARNING! Your system configuration does not contain "kde-apps/kdebase-runtime-meta".
+  * Messages for package x11-terms/gnome-terminal-3.14.3:
+
+ * To get previous working directory inherited in new opened tab you
+ * will need to add the following line to your ~/.bashrc:
+ * . /etc/profile.d/vte.sh
+ * 
+  * Messages for package sys-boot/grub-2.02_beta2-r7:
+
+ * The grub directory has changed from /boot/grub2 to /boot/grub.
+ * Please run grub2-install and grub2-mkconfig -o /boot/grub/grub.cfg.
+ * For information on how to configure GRUB2 please refer to the guide:
+ *     http://wiki.gentoo.org/wiki/GRUB2_Quick_Start
+ * 
+ * You may consider installing the following optional packages:
+ *   dev-libs/libisoburn for Create rescue media (grub-mkrescue)
+ *   sys-fs/mdadm for Enable RAID device detection
+ 
+  * To enable exiting to latest working directory,
+ * put this into your ~/.bashrc:
+ * . /usr/libexec/mc/mc.sh
+  sys-apps/usb_modemswitch
+  **add yourself to plugdev
+
+
+
+
+
+
+
 #
 
 
