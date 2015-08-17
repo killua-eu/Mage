@@ -64,6 +64,7 @@ cs_CZ.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 localectl set-locale LANG=en_US.utf8
 timedatectl set-timezone Europe/Prague
+flaggie media-sound/pulseaudio +equalizer
 
 
 # todo
