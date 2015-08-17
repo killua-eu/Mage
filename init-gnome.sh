@@ -55,7 +55,7 @@ passwd
 echo 'GRUB_CMDLINE_LINUX="rootfstype=ext4 real_init=/usr/lib/systemd/systemd"' >> /etc/default/grub
 grub2-install /dev/sda
 grub2-mkconfig -o /boot/grub/grub.cfg
-useradd -m -G users,wheel,audio,video,plugdev,portage,games,usb -s /bin/bash <user>
+useradd -m -G users,wheel,audio,video,plugdev,portage,games,usb,lp,lpadmin -s /bin/bash <user>
 passwd <user>
 echo 'LINGUAS="en cs"' >> /etc/portage/make.conf
 echo "en_US ISO-8859-1
