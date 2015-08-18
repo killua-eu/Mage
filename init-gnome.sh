@@ -58,6 +58,7 @@ grub2-mkconfig -o /boot/grub/grub.cfg
 useradd -m -G users,wheel,video,plugdev,portage,games,usb,lp,lpadmin -s /bin/bash <user> # not audio due to pulseaudio
 passwd <user>
 echo 'LINGUAS="en cs"' >> /etc/portage/make.conf
+echo 'ACCEPT_LICENSE="*"' >> /etc/portage/make.conf
 echo "en_US ISO-8859-1
 en_US.UTF-8 UTF-8
 cs_CZ.UTF-8 UTF-8" >> /etc/locale.gen
@@ -65,6 +66,7 @@ locale-gen
 localectl set-locale LANG=en_US.utf8
 timedatectl set-timezone Europe/Prague
 flaggie media-sound/pulseaudio +equalizer
+echo "options snd-hda-intel model=dell-m4-1" >> /etc/modprobe.d/alsa.conf # DELL
 
 
 # todo
