@@ -67,7 +67,7 @@ localectl set-locale LANG=en_US.utf8
 timedatectl set-timezone Europe/Prague
 flaggie media-sound/pulseaudio +equalizer
 echo "options snd-hda-intel model=dell-m4-1" >> /etc/modprobe.d/alsa.conf # DELL
-
+# dell - kernel audio stuff modularized
 
 # todo
 * For passwordless login to unlock your keyring, you need to set an empty password on your keyring.
